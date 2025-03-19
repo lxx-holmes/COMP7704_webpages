@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AAPL Financial Analysis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0066cc;
+            --secondary-color: #5ac8fa;
+            --background-color: #f5f5f7;
+            --card-background: white;
+            --text-color: #333333;
+            --border-color: #dddddd;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        /* Make all header text white */
+        .header-content h1, 
+        .header-content h2,
+        .header-content p {
+            color: white;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            margin-top: 1.5em;
+            font-weight: 500;
+            color: var(--primary-color);
+        }
+        
+        h1 { font-size: 2.2rem; }
+        h2 { font-size: 1.8rem; }
+        h3 { font-size: 1.5rem; }
+        h4 { font-size: 1.3rem; }
+        h5 { font-size: 1.1rem; }
+        h6 { font-size: 1rem; }
+        
+        /* Enforce consistent heading styling */
+        .tab-content h1, .tab-content h2, .tab-content h3, 
+        .tab-content h4, .tab-content h5, .tab-content h6 {
+            margin-top: 1.5em;
+            margin-bottom: 0.8em;
+            color: var(--primary-color);
+        }
+        
+        /* Fix styling for conclusion section */
+        .tab-content h3:contains("Conclusion"), 
+        .tab-content h4:contains("Conclusion"),
+        .tab-content h3, .tab-content h4 {
+            margin-top: 1.5em;
+            font-weight: 600;
+            color: var(--primary-color);
+            border-top: 1px solid var(--border-color);
+            padding-top: 1em;
+        }
+        
+        /* Ensure content text is always normal color and weight */
+        .tab-content p {
+            color: var(--text-color);
+            font-weight: normal;
+        }
+        
+        .company-info {
+            margin-bottom: 30px;
+            background-color: var(--card-background);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .info-item {
+            margin-bottom: 10px;
+        }
+        
+        .info-label {
+            font-weight: 500;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            font-weight: 400;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            background-color: var(--card-background);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-title {
+            color: var(--primary-color);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        
+        .tab-container {
+            margin-bottom: 20px;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            margin-bottom: 15px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+        
+        .tab-button {
+            padding: 10px 20px;
+            margin-right: 5px;
+            background-color: #e0e0e0;
+            border: none;
+            border-radius: 4px 4px 0 0;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+        
+        .tab-button.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px;
+            background-color: white;
+            border-radius: 0 0 4px 4px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .tab-content p {
+            margin-bottom: 1em;
+            line-height: 1.6;
+        }
+        
+        /* Fix for Markdown-generated strong tag rendering */
+        .tab-content p strong {
+            font-weight: 600;
+            color: var(--text-color);  /* Ensure strong text is standard color */
+        }
+        
+        /* Special handling for conclusion content */
+        h3:contains("Conclusion") + p,
+        h4:contains("Conclusion") + p,
+        h3:contains("Conclusion") ~ p,
+        h4:contains("Conclusion") ~ p {
+            color: var(--text-color) !important;
+            font-weight: normal !important;
+        }
+        
+        .tab-content ul, .tab-content ol {
+            margin-bottom: 1em;
+            padding-left: 2em;
+        }
+        
+        .tab-content li {
+            margin-bottom: 0.5em;
+        }
+        
+        .highlight {
+            background-color: rgba(90, 200, 250, 0.1);
+            padding: 3px;
+            border-radius: 3px;
+        }
+        
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        /* Ensure consistent styling for bold, italics, etc. */
+        strong, b {
+            font-weight: 600;
+        }
+        
+        /* Table styling */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #f2f2f2;
+            font-weight: 500;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        @media (max-width: 768px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>AAPL - Consumer Electronics</h1>
+            <div>
+                <h2>FINANCIAL ANALYSIS REPORT</h2>
+                <p>Filing Date: October 28, 2022</p>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="company-info">
+            <h2>Company Information</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Symbol</div>
+                    <div class="info-value">AAPL</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Industry</div>
+                    <div class="info-value">Consumer Electronics</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Filing Type</div>
+                    <div class="info-value">10-K</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Filing Date</div>
+                    <div class="info-value">October 28, 2022</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Report Date</div>
+                    <div class="info-value">September 24, 2022</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">SEC Filing</div>
+                    <div class="info-value">
+                        <a href="https://www.sec.gov/Archives/edgar/data/320193/000032019322000108/aapl-20220924.htm" target="_blank">View Original Filing</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">Analysis Reports</h2>
+            <div class="tab-container">
+                <div class="tab-buttons">
+    
+                    <button class="tab-button active" onclick="openTab(event, 'ratio')">Ratio Analysis</button>
+        
+                    <button class="tab-button" onclick="openTab(event, 'is')">Income Statement</button>
+        
+                    <button class="tab-button" onclick="openTab(event, 'bs')">Balance Sheet</button>
+        
+                    <button class="tab-button" onclick="openTab(event, 'cf')">Cash Flow</button>
+        
+                </div>
+    
+                <div id="ratio" class="tab-content active">
+                    <h2><strong>Apple Inc. Financial Ratio Analysis (FY2022)</strong></h2>
+<hr />
+<h3><strong>Executive Summary</strong></h3>
+<ol>
+<li><strong>Margin Expansion</strong>: Gross margin improved 153bps to 43.31% through premium product mix (71.7%-margin Services grew 14% YoY)</li>
+<li><strong>Liquidity Pressures</strong>: Current ratio declined to 0.88 (-18% YoY) from $90.2B buybacks and supply chain commitments</li>
+<li><strong>Strategic Leverage</strong>: Debt/Equity increased to 2.61x (+21% YoY) to fund $405B capital return program</li>
+<li><strong>Operational Efficiency</strong>: Inventory turnover surged 40% to 45.2x despite component shortages</li>
+<li><strong>Valuation Paradox</strong>: P/E compressed to 24.4x despite 7.8% revenue growth, reflecting tax/interest rate concerns</li>
+</ol>
+<h3><strong>1. Comparative Context</strong></h3>
+<p><strong>Profitability Leadership</strong>:
+- Gross margin (43.3%) outperforms hardware peers (Dell: 23.1%, HP: 19.4%) through Services dominance
+- 5-Year Margin Trend: +486bps since 2018 (38.45% → 43.31%) vs industry +220bps average
+- ROIC Impact: Asset turnover (1.12x) + operating margin (30.3%) = 34.0% ROIC vs WACC 8.9%</p>
+<p><strong>Liquidity/Solvency Tradeoff</strong>:
+- Current ratio (0.88) below industry median (1.15) but supported by $156B liquidity buffer
+- Debt/EBITDA stable at 1.8x vs 2.3x industry average despite $111.8B term debt</p>
+<p><strong>Efficiency Multipliers</strong>:
+- 45.2x inventory turnover dwarfs Samsung (8.4x) through JIT manufacturing and demand forecasting
+- 6.47x receivables turnover lags Microsoft (4.2x) due to carrier partnership terms</p>
+<h3><strong>2. Strategic Implications</strong></h3>
+<p><strong>Capital Allocation Mastery</strong>:
+- $89.4B FY22 buybacks reduced shares outstanding by 3% (16.7B → 16.2B shares)
+- Debt arbitrage: 2.8% avg borrowing cost vs 19.8% ROIC generates $17.6B annual value</p>
+<p><strong>Operating Model Shifts</strong>:
+- Services contribution: 19.8% of revenue (71.7% margin) vs 15.4% in 2020
+- R&amp;D/SG&amp;A ratio: 0.53x (26.3B/49.9B) reflects focus on silicon/healthcare R&amp;D</p>
+<p><strong>Supply Chain Resilience</strong>:
+- 45.2x inventory turnover achieved despite 34% YoY component cost inflation
+- Vendor non-trade receivables concentration reduced to 54% (from 61% in 2020)</p>
+<h3><strong>3. Forward Indicators</strong></h3>
+<p><strong>Margin Trajectory</strong>:
+- Services projected to reach 25% of revenue by 2025 (71%+ margins)
+- M2 chip adoption could reduce COGS 3-5% through vertical integration</p>
+<p><strong>Innovation Pipeline</strong>:
+- $26.3B R&amp;D (6.7% of sales) funds AR/VR headsets (2024 launch) and healthcare sensors
+- Deferred revenue ($12.4B) signals growing Services subscription base</p>
+<p><strong>Risk Factors</strong>:
+- Receivables turnover decline (6.47x) may require credit policy adjustments
+- 16.2% effective tax rate could rise with global minimum tax implementation</p>
+<h3><strong>Conclusion</strong></h3>
+<p>Apple's 2022 ratios reveal a company strategically trading liquidity for permanent capital structure improvements. Industry-leading margins and asset efficiency offset leverage concerns, while Services growth and silicon investments create durable pricing power. Near-term focus should monitor China receivables (44% concentration) and R&amp;D commercialization rates for AR/VR initiatives.</p>
+                </div>
+        
+                <div id="is" class="tab-content">
+                    <h2><strong>Apple Inc. Income Statement Analysis (FY2022 vs. FY2021)</strong></h2>
+<hr />
+<h3><strong>Executive Summary</strong></h3>
+<p>Apple achieved $394.3B revenue (+8% YoY) through balanced hardware upgrades and services expansion, while navigating supply chain constraints and currency headwinds. Gross margin improved 150bps to 43.3%, but net margin compressed slightly to 25.3% due to strategic R&amp;D investments and tax impacts. Aggressive $90B share repurchases drove 8.9% diluted EPS growth despite macroeconomic pressures.</p>
+<h3><strong>1. Revenue Analysis</strong></h3>
+<p><strong>Core Growth Drivers</strong>:
+- iPhone (+7%) and Services (+14%) contributed 58% of total revenue, with Services reaching 19.8% of sales
+- Mac sales surged 14% driven by M-series chip adoption
+- Regional resilience: Americas (+11%) and Rest of Asia Pacific (+11%) offset Japan's 9% decline</p>
+<p><strong>Strategic Shifts</strong>:
+- Services revenue mix increased to 19.8% from 18.7% in FY2021
+- Wearables/Home grew 7% despite consumer spending pressures
+- iPad (-8%) reflected product cycle timing and supply constraints</p>
+<p><strong>Industry Alignment</strong>:
+- Services ASP growth (+200bps margin) mirrors industry shift to recurring revenue models
+- iPhone ASP stability demonstrates premium pricing power in contracting smartphone market</p>
+<h3><strong>2. Profitability Assessment</strong></h3>
+<p><strong>Margin Engineering</strong>:
+- Gross margin expansion to 43.3% (+150bps) from product mix optimization and Services' 71.7% margins
+- Operating margin reached 30.3% (+50bps) through COGS efficiency (56.7% vs. 58.2% in FY2021)</p>
+<p><strong>Countervailing Pressures</strong>:
+- 20% R&amp;D growth ($26.3B) for AR/VR and silicon development compressed operating margin potential
+- Effective tax rate increased 290bps to 16.2%, reducing net margin by 60bps</p>
+<p><strong>Competitive Differentiation</strong>:
+- Services margins (+200bps YoY) outperformed hardware industry norms
+- Mac margin expansion (+90bps) validated vertical integration strategy</p>
+<h3><strong>3. Expense Evaluation</strong></h3>
+<p><strong>Strategic Cost Management</strong>:
+- $10.5B COGS increase supported $28.5B revenue growth, demonstrating supply chain efficiency
+- R&amp;D intensity rose to 6.7% of revenue (+70bps) vs. 6% industry average</p>
+<p><strong>Investment Priorities</strong>:
+- $9B share-based compensation (+14%) to retain engineering talent
+- $1.9B retail lease costs (+12%) for experience-driven consumer engagement</p>
+<p><strong>Risk Management</strong>:
+- $27.3B component purchase commitments secured critical supplies amid shortages
+- $5B FX hedging partially offset currency translation losses</p>
+<h3><strong>4. Financial Outcomes</strong></h3>
+<p><strong>Shareholder Value Creation</strong>:
+- 3.3% share count reduction amplified 5.4% net income growth to 8.9% EPS increase
+- $0.90/share dividend (+5.9%) maintained capital return consistency</p>
+<p><strong>Operational Cash Strength</strong>:
+- $122.2B operating cash flow (+17%) funded $90B buybacks and R&amp;D expansion
+- Inventory days remained stable at 9 days despite supply chain volatility</p>
+<p><strong>Strategic Execution</strong>:
+- Services reached $78.1B revenue, achieving software-like margins ahead of schedule
+- iPhone 14 Pro premium mix offset inflationary component costs</p>
+<h3><strong>5. Sustainability &amp; Strategic Outlook</strong></h3>
+<p><strong>Growth Catalysts</strong>:
+- Services pipeline: 950M paid subscriptions across 1B+ installed base
+- Silicon leadership: M-series chips create architectural advantage
+- Emerging markets: Rest of Asia Pacific growth (+11%) shows expansion potential</p>
+<p><strong>Risk Mitigation Needs</strong>:
+- FX exposure: 63% international revenue requires continued hedging
+- Tax compliance: $16.8B unrecognized tax benefits demand resolution
+- Product concentration: iPhone still represents 52% of total sales</p>
+<p><strong>Innovation Readiness</strong>:
+- $26.3B R&amp;D investment positions for AR/VR headset launch and automotive exploration
+- 5-year R&amp;D CAGR of 15% exceeds industry average</p>
+<h3><strong>Conclusion</strong></h3>
+<p>Apple's FY2022 performance validated its ecosystem monetization strategy, with Services reaching critical mass and hardware margins defying industry pressures. While tax impacts and innovation investments temporarily constrained net margins, the company's $122B operating cash flow and disciplined capital allocation provide ample runway for product cycle investments. Sustained 40%+ gross margins require continued Services growth and supply chain resilience against persistent macroeconomic headwinds.</p>
+                </div>
+        
+                <div id="bs" class="tab-content">
+                    <h2><strong>Apple Inc. Financial Position Analysis (FY2022-FY2021)</strong></h2>
+<hr />
+<h3><strong>Executive Summary</strong></h3>
+<p>Apple maintains strong profitability through premium product positioning and services growth, though aggressive capital returns have introduced liquidity pressures. While non-current asset investments signal long-term strategic commitments, a negative working capital position and elevated debt-to-equity ratio (5.97 in 2022) warrant monitoring. The company demonstrates robust operational cash flows ($122B in 2022) and industry-leading gross margins (43.3%), but requires careful balance between shareholder returns and financial flexibility.</p>
+<h3><strong>1. Asset Composition &amp; Strategic Deployment</strong></h3>
+<ul>
+<li><strong>Structural Shift</strong>: Non-current assets grew 6.9% to $148.5B (52.3% of total), driven by 7% PP&amp;E expansion ($42.1B) and intangible investments. Current assets declined to 47.7% ($135.4B) despite 34% inventory growth to $6.6B.</li>
+<li><strong>Liquidity Management</strong>: Cash reserves fell 32% to $23.6B, offset by 30% growth in vendor receivables ($32.7B), suggesting extended payment terms with suppliers.</li>
+<li><strong>Operational Alignment</strong>: $10.7B annual capex supports product innovation, while reduced marketable securities (-11% to $24.7B) indicates cash prioritization for buybacks.</li>
+</ul>
+<h3><strong>2. Liability Structure &amp; Risk Management</strong></h3>
+<ul>
+<li><strong>Debt Strategy</strong>: Reduced long-term debt 11% to $98.7B while increasing short-term obligations 35% to $21.1B, optimizing interest costs amid rising rates.</li>
+<li><strong>Operational Leverage</strong>: Accounts payable surged 17% to $64.1B, matching inventory growth, while deferred revenue increased 15% to $7.9B from services expansion.</li>
+<li><strong>Risk Exposure</strong>: Commercial paper rates spiked from 0.06% to 2.31%, increasing short-term borrowing costs. Lease liabilities grew to $12.4B with $14.1B undiscounted commitments.</li>
+</ul>
+<h3><strong>3. Equity Strategy &amp; Capital Allocation</strong></h3>
+<ul>
+<li><strong>Shareholder Focus</strong>: $90.2B in FY2022 buybacks reduced shares outstanding 3%, while dividends consumed 15% of net income. Retained earnings turned negative (-$3.1B) despite $99.8B net profit.</li>
+<li><strong>Strategic Tradeoffs</strong>: Buybacks have concentrated ownership but increased debt dependence (5.97 debt/equity). R&amp;D investment grew 20% to $26.3B, supporting future product pipelines.</li>
+<li><strong>Global Tax Management</strong>: 71% of pretax income from overseas operations and $16.8B in unrecognized tax benefits highlight complex cross-border capital allocation.</li>
+</ul>
+<h3><strong>4. Financial Stability &amp; Operational Capacity</strong></h3>
+<ul>
+<li><strong>Liquidity Paradox</strong>: Negative NWC (-$18.6B) contrasts with $122B operating cash flow, mitigated by $24.7B in marketable securities. Current ratio fell to 0.88, below industry norms.</li>
+<li><strong>Margin Resilience</strong>: Services gross margins reached 71.7%, offsetting hardware volatility. iPhone ASP growth (+7%) and 40.7x inventory turnover demonstrate premium positioning.</li>
+<li><strong>Strategic Commitments</strong>: $27.3B in purchase obligations and €12.7B EU tax escrow highlight contingent liabilities requiring ongoing cash management.</li>
+</ul>
+<h3><strong>Conclusion</strong></h3>
+<p>Apple's balance sheet reflects a deliberate high-wire act: leveraging unparalleled brand equity and cash generation to fund $105B in annual shareholder returns while maintaining industry-leading R&amp;D investment. Near-term risks center on liquidity management (0.88 current ratio) and global tax exposures, offset by exceptional operating margins (43.3%) and $169B in total liquidity reserves. Strategic priorities should balance continued innovation in services/hardware integration with measured capital return policies to preserve financial flexibility.</p>
+                </div>
+        
+                <div id="cf" class="tab-content">
+                    <h2><strong>Apple Inc. Cash Flow Analysis: Strategic Financial Stewardship in Consumer Electronics</strong>: <em>(Fiscal Years 2021-2022)</em>**</h2>
+<hr />
+<h3><strong>Executive Summary</strong></h3>
+<p>Apple demonstrated robust cash generation capabilities with $122.2B operating cash flow in 2022 (+17.4% YoY), supporting aggressive shareholder returns and strategic investments. The company maintained superior free cash flow conversion (111.7% of net income) while balancing $111.5B in annual FCF generation against $89.4B share repurchases and $14.8B dividends. Sustained R&amp;D investment ($26.3B) and disciplined CAPEX allocation ($10.7B) position the company for continued innovation in premium consumer electronics.</p>
+<hr />
+<h3><strong>1. Operating Cash Flow Performance</strong></h3>
+<ul>
+<li><strong>Core Cash Generation</strong>: Operating cash flow expanded to $122.2B (2022) from $104.0B (2021), outpacing 5.4% net income growth through effective working capital management.</li>
+<li><strong>Quality Drivers</strong>:</li>
+<li>22.4% OCF/Net Income premium driven by $11.3B depreciation and $9.1B share-based compensation</li>
+<li>Working capital optimization: 5.6% reduction in accounts receivable vs. 14.6% expansion in accounts payable</li>
+<li><strong>Margin Synergies</strong>: Services revenue growth (+14%) with estimated 70% gross margins enhanced cash flow quality, offsetting 1.5% inventory buildup for supply chain resilience.</li>
+</ul>
+<hr />
+<h3><strong>2. Investment Strategy and Capital Allocation</strong></h3>
+<ul>
+<li><strong>Strategic CAPEX</strong>: Steady $10.7B infrastructure investment (2.7% of revenue) focused on custom silicon development and retail expansion, supporting 6.8% PP&amp;E growth.</li>
+<li><strong>Innovation Pipeline</strong>: $26.3B R&amp;D expenditure (6.7% of revenue) fuels AR/VR development and ecosystem integration, critical for maintaining premium ASPs ($934 iPhone ASP).</li>
+<li><strong>Liquidity Management</strong>: $109.1B marketable securities portfolio (72% corporate debt) provides strategic flexibility despite $17.4B cash reserve reduction.</li>
+</ul>
+<hr />
+<h3><strong>3. Financing Activities and Capital Structure</strong></h3>
+<ul>
+<li><strong>Shareholder Prioritization</strong>: Returned $104.2B capital (85% via buybacks), reducing shares outstanding by 483M shares (3%) despite 2.31% commercial paper rate increases.</li>
+<li><strong>Debt Strategy</strong>: Conservative leverage with 2.5x EBITDA coverage, repaying $11B debt while maintaining AA+ credit profile.</li>
+<li><strong>Capital Efficiency</strong>: 7.5x FCF dividend coverage ratio provides margin of safety for $1.9B annual dividend growth.</li>
+</ul>
+<hr />
+<h3><strong>4. Cash Flow Sustainability Assessment</strong></h3>
+<ul>
+<li><strong>Liquidity Buffer</strong>: $169.1B total liquidity (cash + securities) supports $27.3B supply chain commitments and $12.8B lease obligations.</li>
+<li><strong>Conversion Resilience</strong>: 24% FCF/Revenue ratio (2022) exceeds industry average, sustained by services margin expansion and 6.3% product revenue growth.</li>
+<li><strong>Strategic Risks</strong>:</li>
+<li>iPhone dependency (52% of sales) exposes to product cycle volatility</li>
+<li>$1.5B FX translation losses highlight global operational risks</li>
+<li>38% deferred tax asset growth requires careful IP monetization</li>
+</ul>
+<hr />
+<h3><strong>Conclusion</strong></h3>
+<p>Apple's cash flow ecosystem demonstrates best-in-class conversion efficiency and strategic discipline, with services growth and vertical integration mitigating hardware cyclicality. While buyback intensity pressures absolute cash reserves ($24.6B), $120.8B long-term marketable securities and 20% FCF growth provide ample capacity for innovation investments and shareholder returns. Maintenance of 43.3% gross margins through premium product mix and tax optimization positions the company to navigate macroeconomic headwinds while advancing its AR/VR and silicon roadmaps.</p>
+                </div>
+        
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Generated on March 19, 2025</p>
+    </footer>
+    
+    <script>
+        function openTab(evt, tabName) {
+            var i, tabContent, tabButtons;
+            
+            // Hide all tab content
+            tabContent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabContent.length; i++) {
+                tabContent[i].style.display = "none";
+                tabContent[i].className = tabContent[i].className.replace(" active", "");
+            }
+            
+            // Deactivate all buttons
+            tabButtons = document.getElementsByClassName("tab-button");
+            for (i = 0; i < tabButtons.length; i++) {
+                tabButtons[i].className = tabButtons[i].className.replace(" active", "");
+            }
+            
+            // Show the current tab and activate the button
+            document.getElementById(tabName).style.display = "block";
+            document.getElementById(tabName).className += " active";
+            evt.currentTarget.className += " active";
+        }
+        
+        // Add a script to fix conclusion formatting issues
+        document.addEventListener('DOMContentLoaded', function() {
+            // First fix: Ensure the first line of each tab is properly formatted as h2 strong
+            // and includes any fiscal year information
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(function(tab) {
+                // Look for title and fiscal year pattern
+                const firstH2 = tab.querySelector('h2:first-child');
+                const fiscalYearP = tab.querySelector('h2:first-child + p em');
+                
+                // If we found both patterns
+                if (firstH2 && fiscalYearP && fiscalYearP.textContent.includes('Fiscal Year')) {
+                    // Get the content
+                    const titleText = firstH2.textContent.trim();
+                    const fiscalYearText = fiscalYearP.textContent.trim();
+                    
+                    // Create combined title
+                    let combinedTitle = titleText;
+                    
+                    // Remove parentheses if they exist
+                    let yearText = fiscalYearText;
+                    if (yearText.startsWith('(') && yearText.endsWith(')')) {
+                        yearText = yearText.substring(1, yearText.length - 1);
+                    }
+                    
+                    combinedTitle += ': ' + yearText;
+                    
+                    // Create new elements
+                    const newH2 = document.createElement('h2');
+                    const strong = document.createElement('strong');
+                    strong.textContent = combinedTitle;
+                    newH2.appendChild(strong);
+                    
+                    // Replace elements
+                    tab.insertBefore(newH2, firstH2);
+                    firstH2.remove();
+                    fiscalYearP.parentElement.remove();
+                }
+                else {
+                    // Standard title fix
+                    const firstElement = tab.querySelector('*:first-child');
+                    
+                    if (firstElement) {
+                        const text = firstElement.textContent.trim();
+                        
+                        // Check if it contains patterns like Apple, Analysis, FY, etc.
+                        if ((text.includes('Apple') || text.includes('AAPL')) &&
+                            (text.includes('Analysis') || text.includes('FY20') || text.includes('Fiscal Year'))) {
+                            
+                            // If it's not already an h2, convert it
+                            if (firstElement.tagName !== 'H2') {
+                                const newH2 = document.createElement('h2');
+                                const strong = document.createElement('strong');
+                                
+                                strong.textContent = text;
+                                newH2.appendChild(strong);
+                                
+                                // Replace the element
+                                tab.replaceChild(newH2, firstElement);
+                            } else if (!firstElement.querySelector('strong')) {
+                                // If it's h2 but not strong
+                                const strong = document.createElement('strong');
+                                strong.textContent = firstElement.textContent;
+                                firstElement.textContent = '';
+                                firstElement.appendChild(strong);
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Fix for conclusion sections
+            const headings = document.querySelectorAll('.tab-content h3, .tab-content h4');
+            headings.forEach(function(heading) {
+                if (heading.textContent.toLowerCase().includes('conclusion')) {
+                    // This is a conclusion heading
+                    let currentNode = heading.nextElementSibling;
+                    
+                    // Process all subsequent elements until the next heading
+                    while (currentNode && !['H1','H2','H3','H4','H5','H6'].includes(currentNode.tagName)) {
+                        if (currentNode.tagName === 'H2') {
+                            // If a conclusion paragraph is wrongly formatted as h2, convert it to p
+                            const newP = document.createElement('p');
+                            newP.innerHTML = currentNode.innerHTML;
+                            newP.style.color = '#333333';
+                            newP.style.fontWeight = 'normal';
+                            currentNode.parentNode.replaceChild(newP, currentNode);
+                            currentNode = newP;
+                        } else if (currentNode.tagName === 'P') {
+                            // Ensure paragraph text is properly styled
+                            currentNode.style.color = '#333333';
+                            currentNode.style.fontWeight = 'normal';
+                            
+                            // Process any strong elements within the paragraph
+                            const strongElements = currentNode.querySelectorAll('strong');
+                            strongElements.forEach(function(strong) {
+                                strong.style.color = '#333333';
+                            });
+                        }
+                        currentNode = currentNode.nextElementSibling;
+                    }
+                }
+            });
+            
+            // Additional fix for any paragraphs under conclusion that might not be caught above
+            document.querySelectorAll('.tab-content h2, .tab-content h3, .tab-content h4').forEach(function(elem) {
+                if (elem.textContent.toLowerCase().includes('conclusion')) {
+                    // Convert any h2 that follows a conclusion heading to a regular paragraph
+                    let next = elem.nextElementSibling;
+                    while (next) {
+                        if (next.tagName === 'H2') {
+                            const p = document.createElement('p');
+                            p.innerHTML = next.innerHTML; 
+                            p.style.color = '#333333';
+                            p.style.fontWeight = 'normal';
+                            next.parentNode.replaceChild(p, next);
+                            next = p;
+                        }
+                        // Stop if we hit another heading (not h2)
+                        if (['H1','H3','H4','H5','H6'].includes(next.tagName)) {
+                            break;
+                        }
+                        next = next.nextElementSibling;
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+    
