@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCD Financial Analysis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0066cc;
+            --secondary-color: #5ac8fa;
+            --background-color: #f5f5f7;
+            --card-background: white;
+            --text-color: #333333;
+            --border-color: #dddddd;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        /* Make all header text white */
+        .header-content h1, 
+        .header-content h2,
+        .header-content p {
+            color: white;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            margin-top: 1.5em;
+            font-weight: 500;
+            color: var(--primary-color);
+        }
+        
+        h1 { font-size: 2.2rem; }
+        h2 { font-size: 1.8rem; }
+        h3 { font-size: 1.5rem; }
+        h4 { font-size: 1.3rem; }
+        h5 { font-size: 1.1rem; }
+        h6 { font-size: 1rem; }
+        
+        /* Enforce consistent heading styling */
+        .tab-content h1, .tab-content h2, .tab-content h3, 
+        .tab-content h4, .tab-content h5, .tab-content h6 {
+            margin-top: 1.5em;
+            margin-bottom: 0.8em;
+            color: var(--primary-color);
+        }
+        
+        /* Fix styling for conclusion section */
+        .tab-content h3:contains("Conclusion"), 
+        .tab-content h4:contains("Conclusion"),
+        .tab-content h3, .tab-content h4 {
+            margin-top: 1.5em;
+            font-weight: 600;
+            color: var(--primary-color);
+            border-top: 1px solid var(--border-color);
+            padding-top: 1em;
+        }
+        
+        /* Ensure content text is always normal color and weight */
+        .tab-content p {
+            color: var(--text-color);
+            font-weight: normal;
+        }
+        
+        .company-info {
+            margin-bottom: 30px;
+            background-color: var(--card-background);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .info-item {
+            margin-bottom: 10px;
+        }
+        
+        .info-label {
+            font-weight: 500;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            font-weight: 400;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            background-color: var(--card-background);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-title {
+            color: var(--primary-color);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        
+        .tab-container {
+            margin-bottom: 20px;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            margin-bottom: 15px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+        
+        .tab-button {
+            padding: 10px 20px;
+            margin-right: 5px;
+            background-color: #e0e0e0;
+            border: none;
+            border-radius: 4px 4px 0 0;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+        
+        .tab-button.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px;
+            background-color: white;
+            border-radius: 0 0 4px 4px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .tab-content p {
+            margin-bottom: 1em;
+            line-height: 1.6;
+        }
+        
+        /* Fix for Markdown-generated strong tag rendering */
+        .tab-content p strong {
+            font-weight: 600;
+            color: var(--text-color);  /* Ensure strong text is standard color */
+        }
+        
+        /* Special handling for conclusion content */
+        h3:contains("Conclusion") + p,
+        h4:contains("Conclusion") + p,
+        h3:contains("Conclusion") ~ p,
+        h4:contains("Conclusion") ~ p {
+            color: var(--text-color) !important;
+            font-weight: normal !important;
+        }
+        
+        .tab-content ul, .tab-content ol {
+            margin-bottom: 1em;
+            padding-left: 2em;
+        }
+        
+        .tab-content li {
+            margin-bottom: 0.5em;
+        }
+        
+        .highlight {
+            background-color: rgba(90, 200, 250, 0.1);
+            padding: 3px;
+            border-radius: 3px;
+        }
+        
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        /* Ensure consistent styling for bold, italics, etc. */
+        strong, b {
+            font-weight: 600;
+        }
+        
+        /* Table styling */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #f2f2f2;
+            font-weight: 500;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        @media (max-width: 768px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>MCD - Restaurants</h1>
+            <div>
+                <h2>FINANCIAL ANALYSIS REPORT</h2>
+                <p>Filing Date: February 24, 2023</p>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="company-info">
+            <h2>Company Information</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Symbol</div>
+                    <div class="info-value">MCD</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Industry</div>
+                    <div class="info-value">Restaurants</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Filing Type</div>
+                    <div class="info-value">10-K</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Filing Date</div>
+                    <div class="info-value">February 24, 2023</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Report Date</div>
+                    <div class="info-value">December 31, 2022</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">SEC Filing</div>
+                    <div class="info-value">
+                        <a href="https://www.sec.gov/Archives/edgar/data/63908/000006390823000012/mcd-20221231.htm" target="_blank">View Original Filing</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">Analysis Reports</h2>
+            <div class="tab-container">
+                <div class="tab-buttons">
+    
+                    <button class="tab-button active" onclick="openTab(event, 'ratio')">Ratio Analysis</button>
+        
+                    <button class="tab-button" onclick="openTab(event, 'is')">Income Statement</button>
+        
+                    <button class="tab-button" onclick="openTab(event, 'bs')">Balance Sheet</button>
+        
+                    <button class="tab-button" onclick="openTab(event, 'cf')">Cash Flow</button>
+        
+                </div>
+    
+                <div id="ratio" class="tab-content active">
+                    <h2><strong>McDonald's Corporation Senior Analyst Report (2021-2022)</strong></h2>
+<h3><strong>Executive Summary</strong></h3>
+<ol>
+<li><strong>Operational Resilience Amid Headwinds</strong>: 10.9% same-store sales growth and 35% digital penetration offset 18% earnings decline from $1.8B in strategic charges</li>
+<li><strong>Franchise Model Strength</strong>: 90% franchised restaurants drove 56.97% gross margin (+280bps YoY), outperforming industry avg. ~50-55%</li>
+<li><strong>Capital Allocation Trade-off</strong>: $8.1B shareholder returns (3.9% dividend yield + $3.9B buybacks) reduced current ratio to 1.43 (-19.7% YoY)</li>
+<li><strong>Debt Structure Optimization</strong>: 63% fixed-rate debt at 4.0% vs. 37% floating-rate at 6.6% positions for rate environment</li>
+<li><strong>Valuation Premium</strong>: P/E expansion to 31.4x (+18.5% YoY) signals market confidence in long-term digital/global strategy</li>
+</ol>
+<h3><strong>1. Comparative Context</strong></h3>
+<p><strong>Profitability vs. Peers</strong>
+- Gross margin (56.97%) exceeds YUM Brands (51.2%) but trails Starbucks (67.3%) due to different product mixes
+- ROA decline to 12.2% (-180bps) remains above QSR industry avg. 8-10% (IBISWorld 2023)</p>
+<p><strong>Efficiency Chain Reaction</strong>
+- Asset turnover improvement (0.43→0.46) partially offset 18% net income decline
+- Receivables turnover decline to 10.96x (-11.6%) contrasts with industry-leading 192x inventory turns</p>
+<p><strong>3-Year Debt Management</strong>
+- Debt/Equity improved from -12.4 (2020) to -8.11 (2022) through retained earnings (+$24.6B cumulative)
+- Interest coverage remains strong at 7.76x vs. industry danger threshold &lt;5x</p>
+<h3><strong>2. Strategic Implications</strong></h3>
+<p><strong>Franchise-Led Margin Expansion</strong>
+- 90% franchised mix (vs. 93% at Restaurant Brands) delivers 82.7% restaurant-level margins (+900bps YoY per Chunk 33)
+- Royalty-driven model reduces exposure to food/paper costs (26.7% of revenue vs. 32-35% at Chipotle)</p>
+<p><strong>Digital Transformation Payoff</strong>
+- 35% digital sales (Chunk 15) drive ticket growth (+MSD%) despite traffic declines industry-wide
+- Mobile app integration reduced counter labor costs to 11.3% of revenue (-150bps vs. 2019)</p>
+<p><strong>Capital Structure Risk</strong>
+- $750M floating-rate debt at 6.6% could add $49.5M annual interest expense per 100bps Fed hike
+- Negative equity (-$6B) limits traditional leverage ratios but aligns with franchise-heavy peers</p>
+<h3><strong>3. Forward Indicators</strong></h3>
+<p><strong>Margin Recovery Potential</strong>
+- Removal of $1.8B non-recurring charges could restore net margin to 30%+ range
+- Global development license conversions (Chunk 144) may add 200-300bps to franchised margins</p>
+<p><strong>Labor Cost Watch</strong>
+- U.S. benefits costs up 37% YoY to $54.2M (Chunk 130) vs. industry avg. 12-15% wage inflation
+- Automation investments could offset 20-30% of labor costs by 2025 (McKinsey QSR study)</p>
+<p><strong>Valuation Triggers</strong>
+- EV/EBITDA at 18.7x (implied) vs. 20.5x for Starbucks suggests rerating potential if digital targets hit
+- International same-store sales (15% 2022 growth) key to sustaining P/E premium</p>
+<h3><strong>Conclusion</strong></h3>
+<p>McDonald's demonstrates masterful navigation of inflationary pressures through pricing power (+10% avg. check) and franchise economics, though aggressive capital returns test liquidity limits. The 31.4x PE reflects bets on digital integration (35% sales) offsetting $6B equity deficit. Watch Q3 2023 for: 1) Floating-rate debt exposure management, 2) Labor cost containment in revamped U.S. stores, 3) International development fee accretion. Maintain overweight rating based on recession-resistant model and 4.8% shareholder yield (dividends + buybacks).</p>
+                </div>
+        
+                <div id="is" class="tab-content">
+                    <h2><strong>McDonald's Corporation Financial Performance Analysis (2022 vs. 2021)</strong></h2>
+<h3><strong>Executive Summary</strong></h3>
+<p>McDonald's demonstrated operational resilience in 2022 with 10.9% global comparable sales growth and 35% digital sales penetration, offsetting macroeconomic headwinds. While reported revenue remained flat at $23.18B (-6% currency-adjusted growth), strategic pricing and franchising efficiency supported profitability. Net income declined 18% to $6.18B due to $1.8B in one-time charges (Russia exit, France tax settlement), with restaurant-level franchised margins expanding 9% to $11.76B.</p>
+<hr />
+<h3><strong>1. Revenue Analysis</strong></h3>
+<p><strong>Top-Line Performance</strong>:
+- Reported revenue stagnation (-0.1% YoY) masked 6% constant-currency growth
+- U.S. segment grew 8% to $9.42B through strategic price increases (+9% avg ticket) and digital adoption
+- International markets showed divergence:
+- Operated markets declined 8% reported (-$1.3B Russia/Ukraine impact)
+- Developmental licensed surged 20% CCY led by Brazil/Japan</p>
+<p><strong>Key Drivers</strong>:
+- Digital sales accounted for 35% of systemwide sales in top markets
+- Delivery expanded to 85% of global restaurants
+- Comparable sales growth remained robust at +10.9% (vs +17% in 2021)</p>
+<hr />
+<h3><strong>2. Profitability Assessment</strong></h3>
+<p><strong>Margin Pressures</strong>:
+- Gross profit from company-operated restaurants fell 21% to $1.37B (84% COGS ratio vs 82% prior)
+- Operating margin contracted 420bps to 40.4% due to:
+- $1.28B Russia impairment charges
+- 6% SG&amp;A growth ($2.86B) from tech investments
+- Labor costs at 30% of company-operated sales</p>
+<p><strong>Adjusted Performance</strong>:
+- Non-GAAP net income grew 7% CCY to $7.49B
+- Franchised margins expanded 9% to $11.76B (88% of total margins)</p>
+<hr />
+<h3><strong>3. Expense Evaluation</strong></h3>
+<p><strong>Structural Costs</strong>:
+- Labor inflation evident in 37% YoY increase in U.S. 401(k) costs ($54.2M)
+- Commodity pressures increased company-operated food costs by 210bps
+- Strategic tech spending drove 20% growth in share-based compensation</p>
+<p><strong>One-Time Impacts</strong>:
+- $1.8B total charges from Russia exit and France tax settlement
+- Partially offset by $271M gain from Dynamic Yield divestiture</p>
+<hr />
+<h3><strong>4. Financial Outcomes</strong></h3>
+<p><strong>Bottom-Line Results</strong>:
+- Net income declined 18% to $6.18B despite 10.9% comp sales growth
+- Effective tax rate rose 380bps to 21.1% due to non-deductible France settlement
+- Diluted EPS fell 17% to $8.33 (-12% CCY)</p>
+<p><strong>Strategic Alignment</strong>:
+- 95% franchised model demonstrated durability with 9% margin growth
+- Digital investments supported 35% omnichannel sales mix</p>
+<hr />
+<h3><strong>5. Sustainability &amp; Strategic Outlook</strong></h3>
+<p><strong>Resilience Factors</strong>:
+- Pricing power demonstrated through 9% U.S. ticket growth with stable traffic
+- $35.9B debt load manageable at 4% avg fixed interest rate</p>
+<p><strong>Risk Factors</strong>:
+- Labor costs at 30% of company-operated sales remain inflationary exposure
+- China COVID restrictions continue pressuring developmental licensed growth</p>
+<p><strong>Industry Positioning</strong>:
+- Maintains leadership in digital adoption (35% sales) vs restaurant sector avg ~20%
+- Franchise margin dominance (88% of total) provides cash flow stability</p>
+<hr />
+<h3><strong>Conclusion</strong></h3>
+<p>McDonald's 2022 performance validated its dual strategy of tech-enabled customer experience and asset-light franchising. While one-time charges obscured underlying 7% CCY EPS growth, the company's 10.9% comp sales growth and 35% digital penetration position it to weather ongoing inflationary pressures. Sustained success hinges on balancing strategic tech investments (evident in rising SG&amp;A) with franchisee profitability maintenance.</p>
+                </div>
+        
+                <div id="bs" class="tab-content">
+                    <h2><strong>McDonald's Corporation Financial Position Analysis (FY2021-FY2022)</strong></h2>
+<h3><strong>Executive Summary</strong></h3>
+<p>McDonald's maintains a franchise-driven financial model with 95% franchised restaurants, demonstrating resilient margins (87% franchised margin) and strong global comparable sales growth (+10.9%). While digital transformation accelerates (35% digital sales penetration), reduced liquidity (cash ↓45% YoY) and rising leverage (debt-to-assets 71.2%) present moderated risks. The capital structure reflects aggressive shareholder returns ($3.9B buybacks) balanced with strategic reinvestment in technology and restaurant modernization.</p>
+<h3><strong>1. Asset Composition &amp; Strategic Deployment</strong></h3>
+<p>Current assets contracted to 10.7% of total assets ($5.42B), with cash reserves halved to $2.58B through deliberate capital return programs. Non-current assets dominate at 89.3% ($44.99B), featuring:
+- $23.77B net PP&amp;E (-3.8% YoY) reflecting Russia divestiture (855 locations)
+- $12.57B lease assets (-7.3% YoY) from portfolio optimization
+- $2.9B goodwill (+4.2% YoY) signaling strategic acquisitions</p>
+<p>Digital infrastructure investments manifest in growing "Other Assets" through technology platforms and loyalty programs. Asset turnover improvements (ROIC ↑110 bps to 22.6%) confirm operational efficiency despite $1.3B Russia-related impairments.</p>
+<h3><strong>2. Liability Structure &amp; Risk Management</strong></h3>
+<p>Debt remains strategically structured with 96% fixed-rate obligations (weighted avg. 3.5%) and $3.5B undrawn credit liquidity. Key liability metrics:
+- Total debt $35.9B (+0.8% YoY)
+- Interest coverage ratio 7.76x (↓ from 8.73x)
+- Short-term borrowings rate ↑ to 5.2% from 2.4%</p>
+<p>The maturity ladder shows $5.47B due by 2024, mitigated through $2.7B long-term reclassification. Currency diversification (25% Euro-denominated debt) hedges against USD volatility.</p>
+<h3><strong>3. Equity Strategy &amp; Capital Allocation</strong></h3>
+<p>Negative equity position deepened to -$6.0B through aggressive capital returns:
+- $3.9B share repurchases
+- 10% dividend increase to $6.08/share</p>
+<p>Retained earnings grew 3.5% to $59.5B despite 14% pre-tax income decline, demonstrating earnings resilience. Compensation strategy shifted towards equity incentives (RSU grants ↑17% to $242.82 avg. value).</p>
+<h3><strong>4. Financial Stability &amp; Operational Capacity</strong></h3>
+<p>Working capital tightened to $1.62B (Current Ratio ↓ to 1.43) but remains sufficient given:
+- Inventory turnover 52.4x
+- Quick ratio 1.25
+- $5.5B annual FCF generation</p>
+<p>Industry-specific strengths include:
+- Digital sales mix at 35% (vs. 20% pre-pandemic)
+- Labor costs at 29.9% of operated revenue (industry-aligned)
+- Global comparable sales +10.9% driven by strategic price/customer count balance</p>
+<p>Primary risks stem from $647M tax contingencies and inflationary pressures (food/commodity costs).</p>
+<h3><strong>Conclusion</strong></h3>
+<h2>McDonald's leverages its franchise model and digital scale to maintain industry leadership, though increased leverage and geopolitical exposures require vigilant capital management. The balance sheet supports continued innovation investment while returning &gt;100% of FCF to shareholders, positioning the company to navigate macroeconomic challenges through brand strength and operational discipline.</h2>
+                </div>
+        
+                <div id="cf" class="tab-content">
+                    <h2><strong>McDonald's Corporation Cash Flow Analysis: Strategic Financial Management in a Turbulent Market</strong></h2>
+<h3><strong>Executive Summary</strong></h3>
+<p>McDonald's demonstrated resilient cash generation despite geopolitical disruptions and inflationary pressures, with global same-store sales growth of 10.9% in 2022. However, operating cash flow declined 19% to $7.4B due to one-time impairments from its Russian exit ($1.3B) and tax settlements. The company maintained financial flexibility through strategic divestitures, $3.5B in undrawn credit facilities, and a disciplined capital allocation strategy prioritizing shareholder returns ($8.1B combined dividends/buybacks) while managing rising interest rate exposure.</p>
+<hr />
+<h3><strong>1. Operating Cash Flow Performance</strong></h3>
+<p>Core operations generated $7.4B in 2022 (2021: $9.1B), with cash conversion efficiency declining to 89% from 94%. Key drivers:
+- <strong>Earnings Quality</strong>: $1.3B Russia impairment and $537M France tax settlement distorted net income-to-cash flow alignment
+- <strong>Working Capital Pressures</strong>: 264% reversal in accounts receivable (2022: $264M increase vs 2021: $310M decrease) signaled slower collections
+- <strong>Labor Cost Impact</strong>: Share-based compensation rose 12% to $166.7M, reflecting industry-wide wage pressures
+- <strong>Franchise Model Strength</strong>: Equity earnings from China/Japan partnerships provided stable (though non-cash) income streams</p>
+<hr />
+<h3><strong>2. Investment Strategy and Capital Allocation</strong></h3>
+<p>Capital expenditures decreased 7% to $1.9B, maintaining 50/50 split between existing restaurant upgrades and strategic growth initiatives:
+- <strong>Asset-Light Transition</strong>: Refranchising reduced capital intensity while expanding royalty-based revenue
+- <strong>Digital Optimization</strong>: Divestiture of Dynamic Yield ($271M gain) completed tech stack rationalization
+- <strong>Geopolitical Repositioning</strong>: Closed 855 Russian locations ($1.3B charge) to focus on high-growth Asian markets
+- <strong>Maintenance/Growth Balance</strong>: $950M allocated to restaurant tech/digital infrastructure versus $950M for new units</p>
+<hr />
+<h3><strong>3. Financing Activities and Capital Structure</strong></h3>
+<p>Debt financing increased 192% to $3.4B while maintaining conservative leverage ratios:
+- <strong>Shareholder Returns</strong>: $4.2B dividends (+6% YoY) and $3.9B buybacks (+360%) consumed 114% of operating cash flow
+- <strong>Interest Rate Management</strong>: Floating-rate debt costs surged to 6.6% (2021: 1.6%), mitigated by 96% fixed-rate debt structure
+- <strong>Liquidity Strategy</strong>: $3.5B credit facility remained undrawn despite $2.6B cash position decline
+- <strong>Currency Diversification</strong>: Multi-currency debt portfolio reduced FX risk in global operations</p>
+<hr />
+<h3><strong>4. Cash Flow Sustainability Assessment</strong></h3>
+<p>Free cash flow declined 23% to $5.5B but maintained key strengths:
+- <strong>Dividend Coverage</strong>: 1.3x FCF-to-dividend ratio (2022) vs 1.7x (2021)
+- <strong>Reinvestment Capacity</strong>: $1.9B CAPEX funded entirely through operating cash flow
+- <strong>Growth Financing</strong>: Reliance on debt for buybacks increased net debt to $34.3B
+- <strong>Margin Resilience</strong>: 10.9% same-store sales growth offset 210bps labor cost pressure in company-operated stores</p>
+<hr />
+<h3><strong>Conclusion</strong></h3>
+<h2>McDonald's sustains cash flow leadership through its franchise model and pricing power, evidenced by 23 consecutive dividend increases. Strategic divestitures and debt-funded buybacks demonstrate active capital management, though rising interest costs (2022: $1.3B) require monitoring. With $5.5B annual FCF generation and 50% CAPEX allocated to digital initiatives, the company remains positioned to navigate labor inflation while expanding its 5% global market share in quick-service restaurants.</h2>
+                </div>
+        
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Generated on March 24, 2025</p>
+    </footer>
+    
+    <script>
+        function openTab(evt, tabName) {
+            var i, tabContent, tabButtons;
+            
+            // Hide all tab content
+            tabContent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabContent.length; i++) {
+                tabContent[i].style.display = "none";
+                tabContent[i].className = tabContent[i].className.replace(" active", "");
+            }
+            
+            // Deactivate all buttons
+            tabButtons = document.getElementsByClassName("tab-button");
+            for (i = 0; i < tabButtons.length; i++) {
+                tabButtons[i].className = tabButtons[i].className.replace(" active", "");
+            }
+            
+            // Show the current tab and activate the button
+            document.getElementById(tabName).style.display = "block";
+            document.getElementById(tabName).className += " active";
+            evt.currentTarget.className += " active";
+        }
+        
+        // Add a script to fix conclusion formatting issues
+        document.addEventListener('DOMContentLoaded', function() {
+            // First fix: Ensure the first line of each tab is properly formatted as h2 strong
+            // and includes any fiscal year information
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(function(tab) {
+                // Look for title and fiscal year pattern
+                const firstH2 = tab.querySelector('h2:first-child');
+                const fiscalYearP = tab.querySelector('h2:first-child + p em');
+                
+                // If we found both patterns
+                if (firstH2 && fiscalYearP && fiscalYearP.textContent.includes('Fiscal Year')) {
+                    // Get the content
+                    const titleText = firstH2.textContent.trim();
+                    const fiscalYearText = fiscalYearP.textContent.trim();
+                    
+                    // Create combined title
+                    let combinedTitle = titleText;
+                    
+                    // Remove parentheses if they exist
+                    let yearText = fiscalYearText;
+                    if (yearText.startsWith('(') && yearText.endsWith(')')) {
+                        yearText = yearText.substring(1, yearText.length - 1);
+                    }
+                    
+                    combinedTitle += ': ' + yearText;
+                    
+                    // Create new elements
+                    const newH2 = document.createElement('h2');
+                    const strong = document.createElement('strong');
+                    strong.textContent = combinedTitle;
+                    newH2.appendChild(strong);
+                    
+                    // Replace elements
+                    tab.insertBefore(newH2, firstH2);
+                    firstH2.remove();
+                    fiscalYearP.parentElement.remove();
+                }
+                else {
+                    // Standard title fix
+                    const firstElement = tab.querySelector('*:first-child');
+                    
+                    if (firstElement) {
+                        const text = firstElement.textContent.trim();
+                        
+                        // Check if it contains patterns like Apple, Analysis, FY, etc.
+                        if ((text.includes('Apple') || text.includes('AAPL')) &&
+                            (text.includes('Analysis') || text.includes('FY20') || text.includes('Fiscal Year'))) {
+                            
+                            // If it's not already an h2, convert it
+                            if (firstElement.tagName !== 'H2') {
+                                const newH2 = document.createElement('h2');
+                                const strong = document.createElement('strong');
+                                
+                                strong.textContent = text;
+                                newH2.appendChild(strong);
+                                
+                                // Replace the element
+                                tab.replaceChild(newH2, firstElement);
+                            } else if (!firstElement.querySelector('strong')) {
+                                // If it's h2 but not strong
+                                const strong = document.createElement('strong');
+                                strong.textContent = firstElement.textContent;
+                                firstElement.textContent = '';
+                                firstElement.appendChild(strong);
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Fix for conclusion sections
+            const headings = document.querySelectorAll('.tab-content h3, .tab-content h4');
+            headings.forEach(function(heading) {
+                if (heading.textContent.toLowerCase().includes('conclusion')) {
+                    // This is a conclusion heading
+                    let currentNode = heading.nextElementSibling;
+                    
+                    // Process all subsequent elements until the next heading
+                    while (currentNode && !['H1','H2','H3','H4','H5','H6'].includes(currentNode.tagName)) {
+                        if (currentNode.tagName === 'H2') {
+                            // If a conclusion paragraph is wrongly formatted as h2, convert it to p
+                            const newP = document.createElement('p');
+                            newP.innerHTML = currentNode.innerHTML;
+                            newP.style.color = '#333333';
+                            newP.style.fontWeight = 'normal';
+                            currentNode.parentNode.replaceChild(newP, currentNode);
+                            currentNode = newP;
+                        } else if (currentNode.tagName === 'P') {
+                            // Ensure paragraph text is properly styled
+                            currentNode.style.color = '#333333';
+                            currentNode.style.fontWeight = 'normal';
+                            
+                            // Process any strong elements within the paragraph
+                            const strongElements = currentNode.querySelectorAll('strong');
+                            strongElements.forEach(function(strong) {
+                                strong.style.color = '#333333';
+                            });
+                        }
+                        currentNode = currentNode.nextElementSibling;
+                    }
+                }
+            });
+            
+            // Additional fix for any paragraphs under conclusion that might not be caught above
+            document.querySelectorAll('.tab-content h2, .tab-content h3, .tab-content h4').forEach(function(elem) {
+                if (elem.textContent.toLowerCase().includes('conclusion')) {
+                    // Convert any h2 that follows a conclusion heading to a regular paragraph
+                    let next = elem.nextElementSibling;
+                    while (next) {
+                        if (next.tagName === 'H2') {
+                            const p = document.createElement('p');
+                            p.innerHTML = next.innerHTML; 
+                            p.style.color = '#333333';
+                            p.style.fontWeight = 'normal';
+                            next.parentNode.replaceChild(p, next);
+                            next = p;
+                        }
+                        // Stop if we hit another heading (not h2)
+                        if (['H1','H3','H4','H5','H6'].includes(next.tagName)) {
+                            break;
+                        }
+                        next = next.nextElementSibling;
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+    
