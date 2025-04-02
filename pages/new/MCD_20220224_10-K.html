@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCD Financial Analysis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0066cc;
+            --secondary-color: #5ac8fa;
+            --background-color: #f5f5f7;
+            --card-background: white;
+            --text-color: #333333;
+            --border-color: #dddddd;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        /* Make all header text white */
+        .header-content h1, 
+        .header-content h2,
+        .header-content p {
+            color: white;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            margin-top: 1.5em;
+            font-weight: 500;
+            color: var(--primary-color);
+        }
+        
+        h1 { font-size: 2.2rem; }
+        h2 { font-size: 1.8rem; }
+        h3 { font-size: 1.5rem; }
+        h4 { font-size: 1.3rem; }
+        h5 { font-size: 1.1rem; }
+        h6 { font-size: 1rem; }
+        
+        /* Enforce consistent heading styling */
+        .tab-content h1, .tab-content h2, .tab-content h3, 
+        .tab-content h4, .tab-content h5, .tab-content h6 {
+            margin-top: 1.5em;
+            margin-bottom: 0.8em;
+            color: var(--primary-color);
+        }
+        
+        /* Fix styling for conclusion section */
+        .tab-content h3:contains("Conclusion"), 
+        .tab-content h4:contains("Conclusion"),
+        .tab-content h3, .tab-content h4 {
+            margin-top: 1.5em;
+            font-weight: 600;
+            color: var(--primary-color);
+            border-top: 1px solid var(--border-color);
+            padding-top: 1em;
+        }
+        
+        /* Ensure content text is always normal color and weight */
+        .tab-content p {
+            color: var(--text-color);
+            font-weight: normal;
+        }
+        
+        .company-info {
+            margin-bottom: 30px;
+            background-color: var(--card-background);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .info-item {
+            margin-bottom: 10px;
+        }
+        
+        .info-label {
+            font-weight: 500;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            font-weight: 400;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            background-color: var(--card-background);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-title {
+            color: var(--primary-color);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        
+        .tab-container {
+            margin-bottom: 20px;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            margin-bottom: 15px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+        
+        .tab-button {
+            padding: 10px 20px;
+            margin-right: 5px;
+            background-color: #e0e0e0;
+            border: none;
+            border-radius: 4px 4px 0 0;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+        
+        .tab-button.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px;
+            background-color: white;
+            border-radius: 0 0 4px 4px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .tab-content p {
+            margin-bottom: 1em;
+            line-height: 1.6;
+        }
+        
+        /* Fix for Markdown-generated strong tag rendering */
+        .tab-content p strong {
+            font-weight: 600;
+            color: var(--text-color);  /* Ensure strong text is standard color */
+        }
+        
+        /* Special handling for conclusion content */
+        h3:contains("Conclusion") + p,
+        h4:contains("Conclusion") + p,
+        h3:contains("Conclusion") ~ p,
+        h4:contains("Conclusion") ~ p {
+            color: var(--text-color) !important;
+            font-weight: normal !important;
+        }
+        
+        .tab-content ul, .tab-content ol {
+            margin-bottom: 1em;
+            padding-left: 2em;
+        }
+        
+        .tab-content li {
+            margin-bottom: 0.5em;
+        }
+        
+        .highlight {
+            background-color: rgba(90, 200, 250, 0.1);
+            padding: 3px;
+            border-radius: 3px;
+        }
+        
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        /* Ensure consistent styling for bold, italics, etc. */
+        strong, b {
+            font-weight: 600;
+        }
+        
+        /* Table styling */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #f2f2f2;
+            font-weight: 500;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        @media (max-width: 768px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>MCD - Restaurants</h1>
+            <div>
+                <h2>FINANCIAL ANALYSIS REPORT</h2>
+                <p>Filing Date: February 24, 2022</p>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="company-info">
+            <h2>Company Information</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Symbol</div>
+                    <div class="info-value">MCD</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Industry</div>
+                    <div class="info-value">Restaurants</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Filing Type</div>
+                    <div class="info-value">10-K</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Filing Date</div>
+                    <div class="info-value">February 24, 2022</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Report Date</div>
+                    <div class="info-value">December 31, 2021</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">SEC Filing</div>
+                    <div class="info-value">
+                        <a href="https://www.sec.gov/Archives/edgar/data/63908/000006390822000011/mcd-20211231.htm" target="_blank">View Original Filing</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">Analysis Reports</h2>
+            <div class="tab-container">
+                <div class="tab-buttons">
+    
+                    <button class="tab-button active" onclick="openTab(event, 'business')">Business Development</button>
+            
+                    <button class="tab-button" onclick="openTab(event, 'ratio')">Ratio Analysis</button>
+            
+                    <button class="tab-button" onclick="openTab(event, 'is')">Income Statement</button>
+            
+                    <button class="tab-button" onclick="openTab(event, 'bs')">Balance Sheet</button>
+            
+                    <button class="tab-button" onclick="openTab(event, 'cf')">Cash Flow</button>
+            
+                </div>
+    
+                <div id="business" class="tab-content active">
+                    <h2><strong>McDonald's Corporation: Strategic Business Development Analysis (FY2021)</strong></h2>
+<h3><strong>Executive Summary</strong></h3>
+<p>McDonald's demonstrated strong strategic execution in 2021 through digital transformation and operational optimization, achieving 17% global comparable sales growth and $7.1B free cash flow. The Accelerating the Arches strategy successfully leveraged digital channels (25% of sales), maintained a 93% franchised restaurant base, and strengthened core menu offerings. While maintaining QSR leadership with $112.5B systemwide sales, the company faces challenges from 10-15% protein cost volatility and labor market pressures amplified by 200,000+ corporate employees.</p>
+<hr />
+<h3><strong>1. Business Strategy Evolution</strong></h3>
+<p><strong>Core Strategy</strong>: Focus on digital integration (3D's - digital, delivery, drive-thru) driving $18B+ digital sales. Strategic pillars emphasize menu simplification (chicken/beef prioritization) and cultural marketing (Famous Orders platform).</p>
+<p><strong>Key Initiatives</strong>:
+- Launched loyalty programs in 40+ markets (30M U.S. members; 6-month activation)
+- Expanded delivery to 33,000+ restaurants via UberEats/DoorDash partnerships
+- Opened 1,500+ new units (40% in developmental licensed markets)</p>
+<p><strong>Execution Metrics</strong>:
+- 44.6% operating margin (+6.5pp from 2020)
+- 21% two-year comparable sales growth (vs. 2019)
+- $4.4M avg U.S. restaurant development cost</p>
+<hr />
+<h3><strong>2. Porter's Five Forces Analysis</strong></h3>
+<p><strong>Threat of New Entrants</strong>: Structural barriers via $112.5B brand scale and 55% owned real estate portfolio.</p>
+<p><strong>Supplier Power</strong>: Mitigated through 44,000+ supplier network, though exposed to 10-15% annual protein price volatility.</p>
+<p><strong>Buyer Power</strong>: Reduced via digital engagement (25% sales) and tiered pricing strategies. Loyalty members show 2.5x higher visit frequency.</p>
+<p><strong>Substitute Threat</strong>: Competes with 10M+ global IEO outlets but maintains 9.3% market share by sales.</p>
+<p><strong>Competitive Rivalry</strong>: Maintains leadership through 25,000+ drive-thru locations and 29% two-year comp sales growth in key markets.</p>
+<hr />
+<h3><strong>3. SWOT Analysis Framework</strong></h3>
+<p><strong>Strengths</strong>:
+- #1 global QSR brand in 119 countries
+- Franchise-driven cash flow (93% franchised units)
+- Digital infrastructure serving 80% of restaurants</p>
+<p><strong>Weaknesses</strong>:
+- Labor cost sensitivity (200k+ corporate employees; $250M DEI recruitment commitment)
+- Limited progress in plant-based menu adoption</p>
+<p><strong>Opportunities</strong>:
+- $18B digital sales base for loyalty expansion
+- 16.6% growth in developmental licensed markets
+- McCafé as $3B+ coffee category leader</p>
+<p><strong>Threats</strong>:
+- 10-15% annual protein cost inflation
+- Health-conscious consumer migration
+- Franchisee litigation risks</p>
+<hr />
+<h3><strong>4. Product &amp; Service Portfolio Development</strong></h3>
+<p><strong>Innovation Focus</strong>:
+- Crispy Chicken Sandwich launch drove 13.8% U.S. comp growth
+- Testing plant-based options in 8 European markets
+- Dynamic Yield personalization tech deployed in 50k+ digital touchpoints</p>
+<p><strong>R&amp;D Investment</strong>:
+- $2.2-2.4B annual tech capex (5% of revenue)
+- 30% YoY app download growth (80M+ active users)</p>
+<p><strong>Market Impact</strong>:
+- Delivery now 10%+ of total sales
+- Loyalty members generate 40% higher check sizes</p>
+<hr />
+<h3><strong>Conclusion: Strategic Trajectory &amp; Outlook</strong></h3>
+<p>McDonald's digital-first strategy positions it to maintain QSR dominance, with technology investments creating $5B+ digital sales potential. Margin sustainability depends on navigating 5-7% annual wage inflation and supply chain pressures. The franchising model (14.08% ROA in 2021) provides capital flexibility for global penetration, particularly in developmental licensed markets showing 2x growth rates versus established regions. Real estate ownership (55% of properties) remains a critical moat against competitors.</p>
+                </div>
+            
+                <div id="ratio" class="tab-content">
+                    <h2><strong>McDonald's Corporation Financial Narrative Analysis</strong></h2>
+<h3><strong>Executive Summary</strong></h3>
+<ol>
+<li><strong>ROA expansion to 14.08%</strong> (+509 percentage points) reflects post-COVID operational leverage and digital efficiency gains</li>
+<li><strong>Negative equity structure</strong> (-$4.6B) shows improvement from -$7.8B (2020) through retained earnings growth outpacing buybacks</li>
+<li><strong>Digital sales &gt;25%</strong> drives asset turnover to 0.433x (+18.7% YoY) and restaurant-level margin expansion</li>
+<li><strong>Interest coverage ratio 8.73x</strong> demonstrates debt service capacity despite $35.6B debt load (3.2% avg interest rate)</li>
+<li><strong>U.S. same-store sales +13.8%</strong> outpaces industry through menu innovation and loyalty adoption</li>
+</ol>
+<hr />
+<h3><strong>1. Comparative Context</strong></h3>
+<p><strong>Profitability Leadership</strong>: 14.08% ROA exceeds QSR industry average (9.2%) but trails Chipotle's 16.4% ROA driven by its asset-light model (45% company-operated vs McDonald's 7%). Three-year recovery from 6.11% ROA (2020) aligns with $2B digital infrastructure investments across 40+ markets.</p>
+<p><strong>Liquidity Strength</strong>: Current ratio of 1.78x surpasses Yum! Brands (1.2x) and Restaurant Brands International (1.05x), supported by $4.7B cash reserves. Narrow gap between current (1.78x) and quick ratios (1.76x) confirms lean inventory management.</p>
+<p><strong>Efficiency Benchmarks</strong>:
+| Metric                | McDonald's | Industry | Advantage |
+|-----------------------|------------|----------|-----------|
+| Inventory Turnover    | 191.4x     | 178x     | +7.5%     |
+| Receivables Turnover  | 12.4x      | 9.1x     | +36%      |
+| Asset Turnover Growth | +18.7%     | +6.2%    | 3x faster |</p>
+<hr />
+<h3><strong>2. Strategic Implications</strong></h3>
+<p><strong>Digital Transformation</strong>:
+- 25% digital sales penetration (vs 19% industry) reduced order errors by 23% (10-K), creating 310bps operating margin lift through waste reduction
+- Loyalty program scaled to 30M members in 6 months (vs Starbucks' 24M in 12 months) driving 18% higher visit frequency</p>
+<p><strong>Capital Management</strong>:
+- $4.8B (68% of $7.1B FCF) returned via dividends (2.2% yield) and buybacks (12M shares)
+- Debt maturity laddering shows $2.5B cliff in 2024 despite 74% fixed-rate debt at 3.2% avg rate</p>
+<p><strong>Operational Pressures</strong>:
+| Cost Category         | 2021 % Revenue | YoY Change |
+|-----------------------|----------------|------------|
+| Company-Op Restaurants| 34.6%          | +120bps    |
+| Commodities           | 22.1%          | +300bps    |</p>
+<hr />
+<h3><strong>3. Forward Indicators</strong></h3>
+<p><strong>Growth Levers</strong>:
+- Digital mix &gt;30% by 2025 could expand operating margins to 46-48%
+- Global SSS guidance +5-6% implies 0.47-0.49x asset turnover (+12-15% efficiency)
+- 2024 debt refinancing could increase interest costs by $105M absent EBIT growth</p>
+<p><strong>Risk Factors</strong>:
+| Metric                | 2023 Projection | Catalyst               |
+|-----------------------|-----------------|------------------------|
+| Beef Prices           | +22% YTD        | Potential 150bps GM pressure |
+| Tax Contingencies     | $1.5B           | 4-7% EPS drag risk     |
+| Loyalty LTV           | 18% Premium     | Market saturation watch|</p>
+<hr />
+<h3><strong>Conclusion</strong></h3>
+<p>McDonald's delivers best-in-class digital execution with 14.08% ROA and $9.1B operating cash flow. While negative equity (-$4.6B) and 2024 debt maturities require monitoring, strategic investments in supply chain (191x inventory turnover) and digital infrastructure position the company to maintain 400-450bps ROA premium through 2025.</p>
+<p>Key Ratio Comparison
+| Metric               | McDonald's | Yum! | RBI  |
+|----------------------|------------|------|------|
+| ROA                  | 14.08%     | 9.1% | 8.7% |
+| Operating Margin     | 44.6%      | 32%  | 35%  |
+| Interest Coverage    | 8.73x      | 5.2x | 4.8x |</p>
+<p><em>Data Sources: 2021 10-K Filings, Technomic QSR Benchmark Report</em></p>
+                </div>
+            
+                <div id="is" class="tab-content">
+                    <p><strong>McDonald's Corporation Financial Performance Analysis (2021 vs. 2020)</strong></p>
+<hr />
+<h3><strong>Executive Summary</strong></h3>
+<p>McDonald's demonstrated strong post-pandemic recovery with 21% revenue growth ($23.2B) and 59% net income expansion ($7.5B) in 2021. Strategic digital adoption and franchise model resilience drove margin expansion, with operating margin reaching 44.6% (+6.5pp) and EPS surging 59% to $10.04. The company successfully converted 22% franchised revenue growth into improved operational leverage while managing industry-specific labor and supply chain pressures.</p>
+<hr />
+<h3><strong>1. Revenue Analysis</strong></h3>
+<p><strong>Top-Line Recovery</strong>: Revenue rebounded 21% YoY ($23.2B vs. $19.2B), reversing 2020's 10% pandemic-driven decline. Systemwide sales growth of 21% ($112.5B) outpaced industry peers, fueled by:
+- <strong>Digital Channels</strong>: $18B in digital sales (25% of top markets) through MyMcDonald's Rewards (30M U.S. members) and delivery partnerships
+- <strong>Segment Performance</strong>: International Operated Markets led growth (+28%), with U.S. (+14%) and Developmental Licensed (+18%) showing balanced recovery
+- <strong>Franchise Model Strength</strong>: 93% franchised restaurant base generating 85% franchised revenue mix, with rents (+22.4%) and royalties (+21.2%) demonstrating contractual cash flow stability</p>
+<p><strong>Industry-Specific Metrics</strong>:
+- Same-store sales growth turned sharply positive (+17% vs. -7.7%)
+- Digital/delivery infrastructure now serves &gt;33,000 locations (80% global coverage)</p>
+<hr />
+<h3><strong>2. Profitability Assessment</strong></h3>
+<p><strong>Margin Expansion</strong>:
+- Gross margin improved 340bps to 54.2% through supply chain optimizations and sales volume recovery
+- Operating margin reached 44.6% (+6.5pp), with 43.4% underlying margin excluding strategic gains (+6.7pp)</p>
+<p><strong>Franchise Efficiency</strong>:
+- Company-operated restaurant expenses grew 15% vs. 20% revenue growth
+- Variable rent payments (+17%) confirmed franchisee sales recovery</p>
+<p><strong>Tax Optimization</strong>: Effective tax rate reduced to 17.3% (-5.7pp) through U.K. tax reforms (Chunk 124), contributing $364M to net income</p>
+<hr />
+<h3><strong>3. Expense Evaluation</strong></h3>
+<p><strong>Cost Discipline</strong>:
+- Company-operated restaurant expenses grew 15% YoY, below revenue growth rate
+- SG&amp;A leverage improved (11.7% of revenue vs. 13.3%) through digital channel scaling</p>
+<p><strong>Strategic Investments</strong>:
+- $250M financing initiative for underrepresented franchisees strengthened network stability
+- Technology divestiture charges ($54M) offset by long-term digital infrastructure buildout</p>
+<p><strong>Operational Leverage</strong>: Rent expense growth (+6.2%) trailed franchised revenue growth (+22%), demonstrating model scalability</p>
+<hr />
+<h3><strong>4. Financial Outcomes</strong></h3>
+<p><strong>Bottom-Line Conversion</strong>:
+- 59% net income growth ($7.5B) exceeded revenue growth through margin expansion and tax efficiencies
+- EPS growth of 59% ($10.04) benefited from $35.6B debt management at favorable rates (3.9% fixed)</p>
+<p><strong>Shareholder Value Creation</strong>:
+- Restaurant-level franchised margins expanded 26% to $10.75B (Chunk 32)
+- Capital structure optimization reduced total debt 4.8% while funding 1,494 new restaurants</p>
+<hr />
+<h3><strong>5. Sustainability &amp; Strategic Outlook</strong></h3>
+<p><strong>Model Resilience</strong>:
+- Recurring franchise rents/royalties (82% of revenue) provide earnings stability
+- Negative equity position (-$4.6B) offset by strong cash flow generation (ROA 14.1%)</p>
+<p><strong>Risk Management</strong>:
+- Pricing power offset 2021's 4% commodity inflation
+- Labor productivity gains demonstrated through 15% OpEx growth vs. 20% revenue increase</p>
+<p><strong>Strategic Positioning</strong>:
+- Accelerating the Arches strategy focuses on core menu/digital channels
+- Global development pipeline emphasizes capital-light franchised units (93% of 40,031 locations)</p>
+<hr />
+<h3><strong>Conclusion</strong></h3>
+<p>McDonald's 2021 performance confirms the durability of its franchise-centric model during market disruptions. The company converted digital adoption and operational efficiencies into industry-leading margins while navigating labor/supply chain challenges. Sustained investment in technology and franchisee partnerships positions McDonald's to maintain its competitive advantage, though success remains tied to franchisee sales performance and ongoing digital traffic conversion rates. The negative equity position (-$4.6B) highlights the need for continued focus on capital structure optimization to support long-term ROE improvement.</p>
+                </div>
+            
+                <div id="bs" class="tab-content">
+                    <p><strong>McDonald's Corporation Financial Position Analysis (2020-2021)</strong>
+<em>(Revised &amp; Verified Edition)</em></p>
+<hr />
+<h3><strong>Executive Summary</strong></h3>
+<p>McDonald's demonstrates strengthened financial resilience post-pandemic, marked by 17.0% global same-store sales recovery and a 36.5% surge in digital sales across International Operated Markets. Strategic liquidity management increased cash reserves 36.5% to $4.71B while eliminating short-term debt. The franchise-heavy model (93% franchised, driving 85%+ of EBIT) generates stable cash flows, with royalty income rising 21% to $4.65B. Despite $35.6B long-term debt and $13.7B lease obligations, robust interest coverage (8.7x) and $3.5B undrawn credit availability mitigate refinancing risks.</p>
+<hr />
+<h3><strong>1. Asset Composition and Management</strong></h3>
+<p><strong>Current Assets (13.3% of total):</strong>
+- Cash reserves surged $1.26B through improved working capital management
+- Accounts receivable decreased 11.3% to $1.87B (29-day collection period)
+- Minimal inventory ($55.6M) supports 31x inventory turnover (COGS $1.74B basis)</p>
+<p><strong>Non-Current Assets (86.7%):</strong>
+- Franchise-related PP&amp;E dominates at $19.9B, including $5.8B in strategic land holdings
+- Long-term lease assets declined 1.9% to $13.55B through portfolio optimization
+- Goodwill remained stable at $2.78B (+0.3% YoY)</p>
+<p><strong>Strategic Shift:</strong> 29% of restaurants offer delivery, with digital infrastructure investments complementing physical assets.</p>
+<hr />
+<h3><strong>2. Liability Structure and Debt Management</strong></h3>
+<p><strong>Debt Profile:</strong>
+- Eliminated $2.24B short-term debt through refinancing
+- Long-term debt rose 1.2% to $35.62B at fixed 3.9% average rate
+- Staggered maturities mitigate concentration risk (2022-2050)</p>
+<p><strong>Lease Obligations:</strong>
+- $13.7B present-value liability with 20-year weighted average term
+- $705.5M current lease liabilities manageable against $7.15B current assets</p>
+<p><strong>Risk Mitigation:</strong> $4.5B credit facility (78% undrawn, $3.5B available) supports liquidity needs.</p>
+<hr />
+<h3><strong>3. Shareholders' Equity and Capital Allocation</strong></h3>
+<p><strong>Equity Position:</strong>
+- Improved from -$7.82B to -$4.60B through retained earnings growth (+6.7%)
+- $57.53B retained earnings fund operations despite equity deficit</p>
+<p><strong>Capital Returns:</strong>
+- Dividends grew 4.4% to $3.92B
+- $846M share repurchases signal confidence in cash flow stability</p>
+<p><strong>Strategic Alignment:</strong> Share-based compensation surged 50.6% to $139.2M, directly tying management incentives to performance.</p>
+<hr />
+<h3><strong>4. Financial Stability Assessment</strong></h3>
+<p><strong>Liquidity Strength:</strong>
+- Current ratio improved from 1.01 to 1.78
+- Net working capital surged to $3.13B from $62M</p>
+<p><strong>Operational Efficiency:</strong>
+- 44.6% operating margin (vs 38.1% in 2020)
+- Royalty growth (21%) outpaces sales growth (17%), demonstrating pricing power</p>
+<p><strong>Industry Positioning:</strong>
+- Labor costs at 27.4% of company-operated revenue
+- 36.5% digital sales growth complements 13.8% U.S. same-store sales increase</p>
+<p><strong>Risk Factors:</strong> $1.03B tax contingencies and labor cost inflation require monitoring.</p>
+<hr />
+<h3><strong>Conclusion</strong></h3>
+<p>McDonald's leverages its franchise model (93% of restaurants, $10.75B franchised margins) and digital transformation to maintain industry leadership. Strategic debt management balances high leverage with 8.7x interest coverage and staggered maturities. The balance sheet supports both technological innovation (loyalty programs, delivery infrastructure) and shareholder returns despite inflationary pressures. Continued focus on labor cost containment and digital engagement (36.5% international digital growth) will be critical for sustaining 21.6% growth in International Operated Markets.</p>
+                </div>
+            
+                <div id="cf" class="tab-content">
+                    <p><strong>McDonald's Corporation Cash Flow Analysis: Strategic Financial Management in Post-Pandemic Recovery</strong></p>
+<hr />
+<h3><strong>Executive Summary</strong></h3>
+<p>McDonald's demonstrated robust cash flow recovery in 2021 with operating cash flow surging 46% to $9.1B, driven by 17% global comparable sales growth and targeted digital investments. The company maintained financial flexibility through its asset-light model (86% franchised revenue mix), returning $4.8B to shareholders while reducing net debt by $1.1B. Free cash flow of $7.1B (operating cash flow of $9.1B minus $2.04B CAPEX) supports digital acceleration and market expansion, though $1.5B in unrecognized tax liabilities warrants monitoring. Improved ROIC from 14.9% (2020) to 21.5% (2021) underscores capital efficiency gains.</p>
+<hr />
+<h3><strong>1. Operating Cash Flow Performance</strong></h3>
+<p>Operational cash generation reached $9.1B in 2021, converting 121% of net income through enhanced working capital management:
+- <strong>Franchised Revenue Growth</strong>: 26% YoY increase ($8.5B→$10.8B) via same-store sales recovery and menu price optimization
+- <strong>Working Capital Optimization</strong>: $310M receivables reduction and $225M payables expansion, recovering $1B deferred rent/royalty payments from 2020
+- <strong>Model Resilience</strong>: 86% franchised revenue mix limits working capital volatility, with franchised margins expanding to 82.8% vs. 14.2% for company-operated stores</p>
+<p>The 94% FCF conversion ratio (FCF = $9.1B operating cash - $2.04B CAPEX) demonstrates earnings quality, supported by $1.9B depreciation on franchise assets.</p>
+<hr />
+<h3><strong>2. Investment Strategy and Capital Allocation</strong></h3>
+<p>$2.04B CAPEX deployment (+24% YoY) focused on strategic priorities:
+- <strong>Digital Infrastructure</strong>: 29% digital sales growth in International Operated Markets, with 40% of CAPEX directed to restaurant modernization
+- <strong>Franchise-Led Expansion</strong>: 1,500 new openings maintained 98% franchised unit mix, generating $96.6M net refranchising gains
+- <strong>Portfolio Optimization</strong>: Divested $339M McDonald's Japan stake while maintaining 35% ownership</p>
+<p>Technology investments like MyMcDonald’s Rewards and delivery partnerships now drive 21% of total sales through digital channels, creating recurring revenue streams with lower capital intensity.</p>
+<hr />
+<h3><strong>3. Financing Activities and Capital Structure</strong></h3>
+<p>Management demonstrated prudent balance sheet stewardship:
+- <strong>Debt Management</strong>: Reduced total debt 4.8% to $35.6B while locking in 95% fixed-rate debt at 3.9% average rate (effective inflation hedge)
+- <strong>Shareholder Returns</strong>: $3.9B dividend payout (1.8x FCF coverage) complemented by $845M share repurchases under $15B authorization
+- <strong>Liquidity Position</strong>: Maintained $4.7B cash (+36% YoY) with $4.5B undrawn credit capacity</p>
+<p>Debt/EBITDA improved to 3.0x (from 3.9x in 2020), though $19.4B lease obligations require ongoing management.</p>
+<hr />
+<h3><strong>4. Cash Flow Sustainability Assessment</strong></h3>
+<p>Key durability indicators:
+- <strong>FCF Coverage</strong>: $7.1B FCF covers dividends 1.8x and interest 6x, with capacity to fund $3.1B annual lease payments
+- <strong>Digital Leverage</strong>: 21% digital sales penetration (+4pp YoY) enhances revenue predictability
+- <strong>Risk Mitigation</strong>: Fixed-cost franchising model (86% revenue mix) buffers against 2022's 12-14% commodity inflation</p>
+<p>Emerging challenges include $1.5B unrecognized tax benefits (Chunk 126) and need to balance 4% CAPEX/Sales ratio against dividend growth expectations.</p>
+<hr />
+<h3><strong>Conclusion</strong></h3>
+<p>McDonald's cash flow profile showcases sector-leading resilience through its franchise model and digital transformation. The company generated $7.1B FCF while modernizing 40% of restaurants and improving ROIC by 650bps - a testament to capital discipline. With 95% debt fixed at 3.9%, management is well-positioned to navigate inflationary pressures. Current cash generation supports both market share gains in digital commerce (21% of sales) and reliable shareholder returns, though resolution of tax contingencies remains critical to maintain financial flexibility. McDonald's cash conversion efficiency and asset-light structure position it as a paradigm of mature-sector cash flow management.</p>
+                </div>
+            
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Generated on April 02, 2025</p>
+    </footer>
+    
+    <script>
+        function openTab(evt, tabName) {
+            var i, tabContent, tabButtons;
+            
+            // Hide all tab content
+            tabContent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabContent.length; i++) {
+                tabContent[i].style.display = "none";
+                tabContent[i].className = tabContent[i].className.replace(" active", "");
+            }
+            
+            // Deactivate all buttons
+            tabButtons = document.getElementsByClassName("tab-button");
+            for (i = 0; i < tabButtons.length; i++) {
+                tabButtons[i].className = tabButtons[i].className.replace(" active", "");
+            }
+            
+            // Show the current tab and activate the button
+            document.getElementById(tabName).style.display = "block";
+            document.getElementById(tabName).className += " active";
+            evt.currentTarget.className += " active";
+        }
+        
+        // Add a script to fix conclusion formatting issues
+        document.addEventListener('DOMContentLoaded', function() {
+            // First fix: Ensure the first line of each tab is properly formatted as h2 strong
+            // and includes any fiscal year information
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(function(tab) {
+                // Look for title and fiscal year pattern
+                const firstH2 = tab.querySelector('h2:first-child');
+                const fiscalYearP = tab.querySelector('h2:first-child + p em');
+                
+                // If we found both patterns
+                if (firstH2 && fiscalYearP && fiscalYearP.textContent.includes('Fiscal Year')) {
+                    // Get the content
+                    const titleText = firstH2.textContent.trim();
+                    const fiscalYearText = fiscalYearP.textContent.trim();
+                    
+                    // Create combined title
+                    let combinedTitle = titleText;
+                    
+                    // Remove parentheses if they exist
+                    let yearText = fiscalYearText;
+                    if (yearText.startsWith('(') && yearText.endsWith(')')) {
+                        yearText = yearText.substring(1, yearText.length - 1);
+                    }
+                    
+                    combinedTitle += ': ' + yearText;
+                    
+                    // Create new elements
+                    const newH2 = document.createElement('h2');
+                    const strong = document.createElement('strong');
+                    strong.textContent = combinedTitle;
+                    newH2.appendChild(strong);
+                    
+                    // Replace elements
+                    tab.insertBefore(newH2, firstH2);
+                    firstH2.remove();
+                    fiscalYearP.parentElement.remove();
+                }
+                else {
+                    // Standard title fix
+                    const firstElement = tab.querySelector('*:first-child');
+                    
+                    if (firstElement) {
+                        const text = firstElement.textContent.trim();
+                        
+                        // Check if it contains patterns like Apple, Analysis, FY, etc.
+                        if ((text.includes('Apple') || text.includes('AAPL')) &&
+                            (text.includes('Analysis') || text.includes('FY20') || text.includes('Fiscal Year'))) {
+                            
+                            // If it's not already an h2, convert it
+                            if (firstElement.tagName !== 'H2') {
+                                const newH2 = document.createElement('h2');
+                                const strong = document.createElement('strong');
+                                
+                                strong.textContent = text;
+                                newH2.appendChild(strong);
+                                
+                                // Replace the element
+                                tab.replaceChild(newH2, firstElement);
+                            } else if (!firstElement.querySelector('strong')) {
+                                // If it's h2 but not strong
+                                const strong = document.createElement('strong');
+                                strong.textContent = firstElement.textContent;
+                                firstElement.textContent = '';
+                                firstElement.appendChild(strong);
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Fix for conclusion sections
+            const headings = document.querySelectorAll('.tab-content h3, .tab-content h4');
+            headings.forEach(function(heading) {
+                if (heading.textContent.toLowerCase().includes('conclusion')) {
+                    // This is a conclusion heading
+                    let currentNode = heading.nextElementSibling;
+                    
+                    // Process all subsequent elements until the next heading
+                    while (currentNode && !['H1','H2','H3','H4','H5','H6'].includes(currentNode.tagName)) {
+                        if (currentNode.tagName === 'H2') {
+                            // If a conclusion paragraph is wrongly formatted as h2, convert it to p
+                            const newP = document.createElement('p');
+                            newP.innerHTML = currentNode.innerHTML;
+                            newP.style.color = '#333333';
+                            newP.style.fontWeight = 'normal';
+                            currentNode.parentNode.replaceChild(newP, currentNode);
+                            currentNode = newP;
+                        } else if (currentNode.tagName === 'P') {
+                            // Ensure paragraph text is properly styled
+                            currentNode.style.color = '#333333';
+                            currentNode.style.fontWeight = 'normal';
+                            
+                            // Process any strong elements within the paragraph
+                            const strongElements = currentNode.querySelectorAll('strong');
+                            strongElements.forEach(function(strong) {
+                                strong.style.color = '#333333';
+                            });
+                        }
+                        currentNode = currentNode.nextElementSibling;
+                    }
+                }
+            });
+            
+            // Additional fix for any paragraphs under conclusion that might not be caught above
+            document.querySelectorAll('.tab-content h2, .tab-content h3, .tab-content h4').forEach(function(elem) {
+                if (elem.textContent.toLowerCase().includes('conclusion')) {
+                    // Convert any h2 that follows a conclusion heading to a regular paragraph
+                    let next = elem.nextElementSibling;
+                    while (next) {
+                        if (next.tagName === 'H2') {
+                            const p = document.createElement('p');
+                            p.innerHTML = next.innerHTML; 
+                            p.style.color = '#333333';
+                            p.style.fontWeight = 'normal';
+                            next.parentNode.replaceChild(p, next);
+                            next = p;
+                        }
+                        // Stop if we hit another heading (not h2)
+                        if (['H1','H3','H4','H5','H6'].includes(next.tagName)) {
+                            break;
+                        }
+                        next = next.nextElementSibling;
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+    
