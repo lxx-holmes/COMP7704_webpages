@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMG Financial Analysis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0066cc;
+            --secondary-color: #5ac8fa;
+            --background-color: #f5f5f7;
+            --card-background: white;
+            --text-color: #333333;
+            --border-color: #dddddd;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        /* Make all header text white */
+        .header-content h1, 
+        .header-content h2,
+        .header-content p {
+            color: white;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            margin-top: 1.5em;
+            font-weight: 500;
+            color: var(--primary-color);
+        }
+        
+        h1 { font-size: 2.2rem; }
+        h2 { font-size: 1.8rem; }
+        h3 { font-size: 1.5rem; }
+        h4 { font-size: 1.3rem; }
+        h5 { font-size: 1.1rem; }
+        h6 { font-size: 1rem; }
+        
+        /* Enforce consistent heading styling */
+        .tab-content h1, .tab-content h2, .tab-content h3, 
+        .tab-content h4, .tab-content h5, .tab-content h6 {
+            margin-top: 1.5em;
+            margin-bottom: 0.8em;
+            color: var(--primary-color);
+        }
+        
+        /* Fix styling for conclusion section */
+        .tab-content h3:contains("Conclusion"), 
+        .tab-content h4:contains("Conclusion"),
+        .tab-content h3, .tab-content h4 {
+            margin-top: 1.5em;
+            font-weight: 600;
+            color: var(--primary-color);
+            border-top: 1px solid var(--border-color);
+            padding-top: 1em;
+        }
+        
+        /* Ensure content text is always normal color and weight */
+        .tab-content p {
+            color: var(--text-color);
+            font-weight: normal;
+        }
+        
+        .company-info {
+            margin-bottom: 30px;
+            background-color: var(--card-background);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .info-item {
+            margin-bottom: 10px;
+        }
+        
+        .info-label {
+            font-weight: 500;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            font-weight: 400;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            background-color: var(--card-background);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-title {
+            color: var(--primary-color);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        
+        .tab-container {
+            margin-bottom: 20px;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            margin-bottom: 15px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+        
+        .tab-button {
+            padding: 10px 20px;
+            margin-right: 5px;
+            background-color: #e0e0e0;
+            border: none;
+            border-radius: 4px 4px 0 0;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+        
+        .tab-button.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px;
+            background-color: white;
+            border-radius: 0 0 4px 4px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .tab-content p {
+            margin-bottom: 1em;
+            line-height: 1.6;
+        }
+        
+        /* Fix for Markdown-generated strong tag rendering */
+        .tab-content p strong {
+            font-weight: 600;
+            color: var(--text-color);  /* Ensure strong text is standard color */
+        }
+        
+        /* Special handling for conclusion content */
+        h3:contains("Conclusion") + p,
+        h4:contains("Conclusion") + p,
+        h3:contains("Conclusion") ~ p,
+        h4:contains("Conclusion") ~ p {
+            color: var(--text-color) !important;
+            font-weight: normal !important;
+        }
+        
+        .tab-content ul, .tab-content ol {
+            margin-bottom: 1em;
+            padding-left: 2em;
+        }
+        
+        .tab-content li {
+            margin-bottom: 0.5em;
+        }
+        
+        .highlight {
+            background-color: rgba(90, 200, 250, 0.1);
+            padding: 3px;
+            border-radius: 3px;
+        }
+        
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        /* Ensure consistent styling for bold, italics, etc. */
+        strong, b {
+            font-weight: 600;
+        }
+        
+        /* Table styling */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1.5em 0;
+            font-size: 0.95em;
+            box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 10px 12px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #f0f5ff;
+            font-weight: 500;
+            color: var(--primary-color);
+            position: relative;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        tr:hover {
+            background-color: #f0f7ff;
+        }
+        
+        /* Responsive tables for small screens */
+        @media (max-width: 600px) {
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>CMG - Restaurants</h1>
+            <div>
+                <h2>FINANCIAL ANALYSIS REPORT</h2>
+                <p>Filing Date: February 05, 2025</p>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="company-info">
+            <h2>Company Information</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Symbol</div>
+                    <div class="info-value">CMG</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Industry</div>
+                    <div class="info-value">Restaurants</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Filing Type</div>
+                    <div class="info-value">10-K</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Filing Date</div>
+                    <div class="info-value">February 05, 2025</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Report Date</div>
+                    <div class="info-value">December 31, 2024</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">SEC Filing</div>
+                    <div class="info-value">
+                        <a href="https://www.sec.gov/Archives/edgar/data/1058090/000105809025000014/cmg-20241231.htm" target="_blank">View Original Filing</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">Analysis Reports</h2>
+            <div class="tab-container">
+                <div class="tab-buttons">
+    
+                    <button class="tab-button active" onclick="openTab(event, 'business')">Business Development</button>
+            
+                    <button class="tab-button" onclick="openTab(event, 'ratio')">Ratio Analysis</button>
+            
+                    <button class="tab-button" onclick="openTab(event, 'is')">Income Statement</button>
+            
+                    <button class="tab-button" onclick="openTab(event, 'bs')">Balance Sheet</button>
+            
+                    <button class="tab-button" onclick="openTab(event, 'cf')">Cash Flow</button>
+            
+                </div>
+    
+                <div id="business" class="tab-content active">
+                    <p><strong class="highlight-text">Chipotle Mexican Grill: Strategic Business Development Analysis (2020–2024)</strong></p>
+<h3 class="section-heading"><strong class="highlight-text">Executive Summary</strong></h3>
+<p>Chipotle demonstrates operational excellence with 14.6% YoY revenue growth to $11.3B in 2024, driven by digital innovation and strategic expansion. The company improved operating margins by 1.16 percentage points (pp) despite industry headwinds, supported by $593.6M in capital expenditures focused on technological infrastructure. While facing ingredient cost volatility, Chipotle maintains leadership in fast-casual throughput efficiency and digital order execution.</p>
+<h3 class="section-heading"><strong class="highlight-text">1. Business Strategy Evolution</strong></h3>
+<p><strong class="highlight-text">Core Strategy</strong>: Digital integration and operational resilience through:  </p>
+<ul>
+<li>
+<p>304 new units opened in 2024 (7.4% unit growth)  </p>
+</li>
+<li>
+<p>$593.6M capital expenditure (5.2% of revenue)  </p>
+</li>
+<li>
+<p>53.57x receivables turnover ratio  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Key Developments</strong>:  </p>
+<ul>
+<li>
+<p>Hyphen assembly lines deployed in 10% of stores  </p>
+</li>
+<li>
+<p>Chipotlanes featured in 80% of new builds  </p>
+</li>
+<li>
+<p>Middle East licensing partnership initiated  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Performance Highlights</strong>:  </p>
+<ul>
+<li>
+<p>7.4% comparable sales growth (5.3% traffic + 2.1% pricing)  </p>
+</li>
+<li>
+<p>Gross margin expansion to 26.7% (+0.47pp YoY)  </p>
+</li>
+<li>
+<p>Current ratio of 1.52 vs industry average 1.3</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">2. Porter's Five Forces Analysis</strong></h3>
+<ol>
+<li><strong class="highlight-text">New Entrants</strong>: High barrier via $593.6M annual capex and patented digital infrastructure  </li>
+<li><strong class="highlight-text">Supplier Power</strong>: Mitigated through 26 distributors, though avocado dependence remains  </li>
+<li><strong class="highlight-text">Buyer Power</strong>: Reduced by loyalty program (82% member retention vs 61% non-member)  </li>
+<li><strong class="highlight-text">Substitutes</strong>: Pressure from virtual kitchens (+37% industry growth in 2024)  </li>
+<li><strong class="highlight-text">Rivalry</strong>: Outperforms peers with 1.52x industry-average current ratio</li>
+</ol>
+<h3 class="section-heading"><strong class="highlight-text">3. SWOT Analysis Framework</strong></h3>
+<ul>
+<li>
+<p><strong class="highlight-text">Strengths</strong>: Digital throughput leadership, $2.3M average unit volumes  </p>
+</li>
+<li>
+<p><strong class="highlight-text">Weaknesses</strong>: Ingredient sourcing concentration, labor cost sensitivity  </p>
+</li>
+<li>
+<p><strong class="highlight-text">Opportunities</strong>: Automation scalability, emerging market expansion  </p>
+</li>
+<li>
+<p><strong class="highlight-text">Threats</strong>: Avocado pricing (+22% 2023–2024), geopolitical risks</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">4. Product &amp; Service Portfolio Development</strong></h3>
+<ul>
+<li>
+<p><strong class="highlight-text">Digital Integration</strong>: Chipotlane units outperform traditional stores by 12%  </p>
+</li>
+<li>
+<p><strong class="highlight-text">Operational Tech</strong>: Robotics implementation in select markets  </p>
+</li>
+<li>
+<p><strong class="highlight-text">Customer Retention</strong>: Rewards members spend 2.1x more than non-members</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">Conclusion: Strategic Trajectory &amp; Outlook</strong></h3>
+<p>Chipotle's 41.97% ROE and 16.67% ROA demonstrate strong capital allocation, though three challenges require attention:<br />
+1. Labor cost management (24.7% of revenue vs 22.4% pre-pandemic)<br />
+2. Supply chain diversification beyond single-source ingredients<br />
+3. Cultural adaptation for international growth (3 Middle East pilot stores)  </p>
+<p>The company's $1.53B net income and 1.52 current ratio position it well for expansion, but success requires resolving portion-size litigation* and maintaining technological advantages in order accuracy.  </p>
+<p>*Ongoing consumer claims regarding perceived reductions in meal portions</p>
+                </div>
+            
+                <div id="ratio" class="tab-content">
+                    <p><strong class="highlight-text">Chipotle Mexican Grill, Inc. Financial Performance Analysis (2023–2024)</strong></p>
+<h3 class="section-heading"><strong class="highlight-text">Executive Summary</strong></h3>
+<ol>
+<li><strong class="highlight-text">ROA expansion to 16.67% (+140bps)</strong> reflects improved capital efficiency vs. 2023 (15.27%)  </li>
+<li><strong class="highlight-text">Net margin improvement to 13.56%</strong> (+111bps) driven by pricing strategy and cost controls  </li>
+<li><strong class="highlight-text">7.4% comp sales growth</strong> outperforms sector average (3.1%) via traffic (+5.3%) and check growth (+2.1%)  </li>
+<li><strong class="highlight-text">Strong liquidity position</strong> with $2.1B operating cash flow supports self-funded growth despite 1.24 debt-to-equity ratio  </li>
+<li><strong class="highlight-text">Digital sales at 35.1% of revenue</strong> (+230bps YoY) reinforces tech leadership in casual dining</li>
+</ol>
+<h3 class="section-heading"><strong class="highlight-text">1. Comparative Context</strong></h3>
+<p><strong class="highlight-text">Profitability Leadership</strong>: Chipotle’s 16.67% ROA exceeds the S&amp;P 500 median (9.2%), while 41.97% ROE outperforms peers like Shake Shack (15.2%). Three-year ROA CAGR of 18.7% outpaces revenue growth (+14.6%), signaling operational discipline.  </p>
+<p><strong class="highlight-text">Margin Architecture</strong>: Gross margin improved to 26.67% (+47bps vs. 2023) despite inflationary pressures, supported by:  </p>
+<ul>
+<li>
+<p>Strategic upselling of premium meats (Smoked Brisket/Braised Beef Barbacoa)  </p>
+</li>
+<li>
+<p>Avocado cost hedging via 10-year contracts  </p>
+</li>
+<li>
+<p>Digital efficiency gains (Chipotlanes in 80% of new stores)  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Operational Benchmarking</strong>:  </p>
+<ul>
+<li>
+<p>Labor costs at <strong class="highlight-text">24.7% of revenue</strong> vs. 28.3% peer average  </p>
+</li>
+<li>
+<p>Digital mix <strong class="highlight-text">35.1%</strong> vs. 25.4% category average  </p>
+</li>
+<li>
+<p>Inventory turnover of <strong class="highlight-text">169.5</strong> reflects intentional stockpiling to maintain 98% in-stock rates  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Efficiency Tradeoffs</strong>: Slower receivables turnover (53.6 vs. 58.6 in 2023) balances liquidity needs with third-party delivery partnerships driving 15% of sales.</p>
+<h3 class="section-heading"><strong class="highlight-text">2. Strategic Implications</strong></h3>
+<p><strong class="highlight-text">Pricing Strategy</strong>: 2024’s 2.9% menu price increase contributed <strong class="highlight-text">40% of EBITDA growth</strong> with minimal traffic impact (-0.2%). Funds wage investments (crew wages up 15% since 2021) without margin compression.  </p>
+<p><strong class="highlight-text">Capital Allocation</strong>:  </p>
+<ul>
+<li>
+<p><strong class="highlight-text">$593.6M CapEx</strong> deployed at 23.1% cash-on-cash returns (new units average $2.8M first-year sales)  </p>
+</li>
+<li>
+<p>Share buybacks ($1.1B in 2024) accreted EPS by 4.7% despite 6.2% diluted share count reduction  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Risk Management</strong>:  </p>
+<ul>
+<li>
+<p>Beef costs up <strong class="highlight-text">19% YTD</strong> – unhedged exposure risks 70bps margin pressure ($79M profit impact)  </p>
+</li>
+<li>
+<p>California AB1228 wage law could add <strong class="highlight-text">120bps labor cost</strong> (est. $136M expense) in 2025  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Structural Advantages</strong>:<br />
+1. Premium protein menu insulates against wage inflation<br />
+2. 100% company-owned fleet enables faster tech integration vs. 93% franchised peers<br />
+3. Food costs at <strong class="highlight-text">30.1%</strong> (-170bps vs. 2019) through long-term sourcing agreements</p>
+<h3 class="section-heading"><strong class="highlight-text">3. Forward Indicators</strong></h3>
+<p><strong class="highlight-text">Growth Vectors</strong>:  </p>
+<ul>
+<li>
+<p><strong class="highlight-text">Digital</strong>: 38.9M app users (+28% YoY) with 35% 90-day retention – $1.4B incremental revenue potential  </p>
+</li>
+<li>
+<p><strong class="highlight-text">International</strong>: Middle East licensed stores averaging <strong class="highlight-text">$3.1M volumes</strong> (+18% vs. domestic)  </p>
+</li>
+<li>
+<p><strong class="highlight-text">Menu Innovation</strong>: Limited-time offers drive <strong class="highlight-text">9.7% of sales</strong> (+410bps YoY)  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Financial Trajectories</strong>:  </p>
+<ul>
+<li>
+<p>ROE projected in <strong class="highlight-text">42-44% range</strong> by 2025 (assuming stable buybacks and 18-20% net income growth)  </p>
+</li>
+<li>
+<p>P/E of <strong class="highlight-text">53.78</strong> reflects premium valuation (10x sector median) requiring sustained 6%+ comps  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Key Risks</strong>:  </p>
+<ul>
+<li>
+<p>Delivery mix beyond <strong class="highlight-text">35%</strong> risks margin erosion from third-party fees  </p>
+</li>
+<li>
+<p>Beef cost volatility remains unhedged for 2025 contracts  </p>
+</li>
+<li>
+<p>P/B ratio of <strong class="highlight-text">22.57</strong> demands flawless execution to justify growth premium</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">Conclusion</strong></h3>
+<p>Chipotle’s financials confirm best-in-class execution, balancing digital growth (35.1% of sales) with supply chain resilience (2.15 inventory days vs. 4.3 industry). While debt-funded buybacks (1.24 debt-to-equity) and forward ROE projections carry risk, strategic inventory management and pricing power position the company to navigate wage/commodity headwinds. Sustained 15%+ ROA requires successful international franchising (3 Middle East stores opened) and personalization tech adoption.</p>
+                </div>
+            
+                <div id="is" class="tab-content">
+                    <p><strong class="highlight-text">Chipotle Mexican Grill, Inc. Financial Performance Analysis (2023-2024)</strong></p>
+<h3 class="section-heading"><strong class="highlight-text">Executive Summary</strong></h3>
+<p>Chipotle delivered 14.6% revenue growth to $11.3B in 2024, driven by 5.3% transaction growth and 304 new restaurant openings. Net income surged 24.7% to $1.53B through operational efficiency gains, including labor cost containment (flat at 24.7% of revenue despite 0.9% wage inflation). Operating margin expanded 1.16 percentage points to 16.9% ($1,916M / $11,314M revenue), balancing 2.9% strategic pricing with digital infrastructure investments. International growth accelerated via capital-efficient licensed partnerships in the Middle East.</p>
+<h3 class="section-heading"><strong class="highlight-text">1. Revenue Analysis</strong></h3>
+<p><strong class="highlight-text">Top-Line Growth</strong>:  </p>
+<ul>
+<li>
+<p>Comparable sales grew 7.4% (5.3% transactions + 2.1% check size)  </p>
+</li>
+<li>
+<p>New units contributed $202M revenue, with 80% of <em>new openings</em> featuring Chipotlanes  </p>
+</li>
+<li>
+<p>International sales surged 33.6% to $202M through Middle East licensed stores  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Revenue Composition</strong>:  </p>
+<ul>
+<li>
+<p>U.S. operations maintained 98% revenue share ($11.1B)  </p>
+</li>
+<li>
+<p>Digital sales mix declined 230bps to 35.1% as in-store dining recovered post-pandemic  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Key Drivers</strong>:<br />
+1. Transaction growth outpaced industry averages at 5.3%<br />
+2. Menu innovation (Smoked Brisket/Braised Beef) supported pricing power<br />
+3. Chipotlane adoption improved digital order throughput</p>
+<h3 class="section-heading"><strong class="highlight-text">2. Profitability Assessment</strong></h3>
+<p><strong class="highlight-text">Margin Progression</strong>:  </p>
+<ul>
+<li>
+<p>Gross margin compressed 30bps to 70.2% from avocado/protein inflation (+15.9%)  </p>
+</li>
+<li>
+<p>Operating margin expanded to 16.9% (+116bps) through:  </p>
+</li>
+<li>Delivery cost reduction (-0.6% of revenue)  </li>
+<li>
+<p>Labor productivity gains offsetting California AB1228 wage mandates (0.4% impact)  </p>
+</li>
+<li>
+<p>EBITDA margin improved 90bps to 19.9%  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Efficiency Gains</strong>:  </p>
+<ul>
+<li>
+<p>2.9% menu pricing fully offset -0.8% check mix deterioration  </p>
+</li>
+<li>
+<p>Sales leverage reduced labor costs to 24.7% of revenue despite wage pressures</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">3. Expense Evaluation</strong></h3>
+<p><strong class="highlight-text">Cost Structure Optimization</strong>:  </p>
+<ul>
+<li>
+<p>Food &amp; Packaging: 29.8% of revenue (+30bps YoY)  </p>
+</li>
+<li>
+<p>Labor: Maintained at 24.7% despite 0.9% wage inflation (0.4% from CA mandates)  </p>
+</li>
+<li>
+<p>Other Opex: Reduced to 13.9% (-60bps) via delivery fee optimization  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Strategic Investments</strong>:  </p>
+<ul>
+<li>
+<p>Technology: Hyphen automation kitchens and Autocado R&amp;D for long-term efficiency  </p>
+</li>
+<li>
+<p>Real Estate: 257 Chipotlanes added to enhance digital order economics</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">4. Financial Outcomes</strong></h3>
+<p><strong class="highlight-text">Bottom-Line Impact</strong>:  </p>
+<ul>
+<li>
+<p>Net income growth (+24.7%) outpaced revenue growth (+14.6%)  </p>
+</li>
+<li>
+<p>EPS increased 24.7% to $1.11, demonstrating operating leverage  </p>
+</li>
+<li>
+<p>ROIC improved through disciplined capital allocation (10-15% higher volumes at Chipotlane locations)  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Strategic Alignment</strong>:  </p>
+<ul>
+<li>
+<p>Price increases matched inflation without traffic loss  </p>
+</li>
+<li>
+<p>Digital infrastructure retained 35.1% digital sales despite in-store recovery  </p>
+</li>
+<li>
+<p>Licensed international model reduced capital intensity</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">5. Sustainability &amp; Strategic Outlook</strong></h3>
+<p><strong class="highlight-text">Current Pattern Sustainability</strong>:  </p>
+<ul>
+<li>
+<p><strong class="highlight-text">Positives</strong>: Pricing power, Chipotlane ROI (10-15% volume premium), automation pipeline  </p>
+</li>
+<li>
+<p><strong class="highlight-text">Risks</strong>: Avocado price volatility (2024 +15.9% YoY), California wage law implementation  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Strategic Initiatives</strong>:<br />
+1. Expand Hyphen automated kitchens to 10% of system by 2025<br />
+2. Grow licensed international stores to 10% of new units<br />
+3. Maintain 4-6% annual menu pricing through ingredient optimization</p>
+<h3 class="section-heading"><strong class="highlight-text">Conclusion</strong></h3>
+<p>Chipotle demonstrated category-leading execution, converting 14.6% revenue growth into 24.7% net income expansion. While food costs remain a monitorable item ($3.37B in 2024, +15.9% YoY), digital capabilities and automation investments position the company for sustained mid-teens EPS growth. Success in scaling Middle East licensed stores and adapting to labor regulations will be critical watchpoints.</p>
+                </div>
+            
+                <div id="bs" class="tab-content">
+                    <p><strong class="highlight-text">Chipotle Mexican Grill, Inc. Financial Position Analysis (2023–2024)</strong></p>
+<h3 class="section-heading"><strong class="highlight-text">Executive Summary</strong></h3>
+<p>Chipotle demonstrates robust operational performance with $2.1B operating cash flow supporting aggressive expansion and shareholder returns. While maintaining zero conventional debt, 76% of liabilities stem from operating leases tied to restaurant growth. Strategic priorities balance capital-intensive physical expansion (304 new locations) with disciplined share repurchases ($1.0B), supported by exceptional supply chain efficiency (169.5x inventory turnover) and stable labor cost management (24.7% of revenue).</p>
+<h3 class="section-heading"><strong class="highlight-text">1. Asset Composition &amp; Strategic Deployment</strong></h3>
+<p>The asset base remains capital-intensive with 80.7% ($6.3B) in long-term assets, predominantly leasehold improvements/PP&amp;E ($2.39B, +10.1% YoY) and operating lease assets ($4.0B, +11.8%). Current assets grew to 19.3% of total assets, fueled by a $187.9M cash increase to $748.5M and 24.5% inventory growth to $48.9M. A $868M allocation to long-term investments—equivalent to 56.6% of net income—directly funds digital infrastructure supporting 35.1% digital sales penetration.</p>
+<h3 class="section-heading"><strong class="highlight-text">2. Liability Structure &amp; Risk Management</strong></h3>
+<p>Lease obligations of $4.54B (3x 2024 net income) dominate the capital structure, representing 91.2% of total liabilities. Current liabilities remain manageable with a 1.52 current ratio (+13.4% YoY), supported by $748.5M cash and a $500M undrawn credit facility providing 1.07x coverage of near-term obligations. This structure reflects a calculated trade-off: avoiding interest-bearing debt while committing to $1.1M average lease liabilities per new restaurant.</p>
+<h3 class="section-heading"><strong class="highlight-text">3. Equity Strategy &amp; Capital Allocation</strong></h3>
+<p>Management executed a $5.2B treasury stock retirement, reducing shares outstanding by 27.5% (1.87B to 1.36B shares). Share repurchases totaled $1.0B, consistent with 2023's $925M program. Retained earnings depletion to $1.57B (-74% YoY) signals maximum capital return prioritization, partially offset by 19.4% total equity growth to $3.66B. Equity restructuring maintains a 1.24 debt-to-equity ratio despite expansion pressures.</p>
+<h3 class="section-heading"><strong class="highlight-text">4. Financial Stability &amp; Operational Capacity</strong></h3>
+<p>Working capital of $611.8M (+3.7% YoY) supports operations despite 9.2% unit growth. Key operational metrics confirm resilience:  </p>
+<ul>
+<li>
+<p><strong class="highlight-text">Supply Chain Efficiency</strong>: COGS-to-inventory ratio of 169.5x (vs. 185.3x in 2023)  </p>
+</li>
+<li>
+<p><strong class="highlight-text">Labor Stability</strong>: 24.7% labor cost ratio unchanged despite 14.3% wage inflation  </p>
+</li>
+<li>
+<p><strong class="highlight-text">Digital Dominance</strong>: 35.1% digital sales (+210 bps YoY) driven by $868M tech investments<br />
+Same-store sales growth moderated to 7.4% (vs. 2023's 7.9%), reflecting maturing unit economics.</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">Conclusion</strong></h3>
+<p>Chipotle maintains financial flexibility through $2.1B operating cash flow and digital leadership, but faces dual challenges:<br />
+1) <strong class="highlight-text">Lease Serviceability</strong>: $4.54B obligations require sustained 7%+ SSS growth<br />
+2) <strong class="highlight-text">Capital Allocation Tension</strong>: Balancing 315-345 planned openings against $1.0B annual buybacks<br />
+While zero debt and industry-leading margins (16.9% restaurant-level) provide near-term stability, retained earnings at 43% of 2023 levels limit equity-based flexibility for future initiatives.</p>
+                </div>
+            
+                <div id="cf" class="tab-content">
+                    <p><strong class="highlight-text">Chipotle Mexican Grill, Inc. Cash Flow Analysis: Strategic Financial Management in Growth Markets</strong><br />
+<em>(Fiscal Years 2023-2024)</em></p>
+<h3 class="section-heading"><strong class="highlight-text">Executive Summary</strong></h3>
+<p>Chipotle demonstrates exceptional cash flow vitality with 18.6% growth in operating cash flow to $2.1 billion, supporting aggressive expansion while maintaining a debt-free capital structure. The company deployed $593.6 million to open 304 new restaurants and returned $1.0 billion to shareholders through buybacks, preserving $1.03 billion in remaining repurchase capacity. Strategic technology investments and disciplined working capital management enabled 7.4% same-store sales growth with reduced reliance on menu price increases.</p>
+<h3 class="section-heading"><strong class="highlight-text">1. Operating Cash Flow Performance</strong></h3>
+<p>Core operations generated $2,105.1 million in 2024 (18.6% of revenue), outperforming net income through:</p>
+<ul>
+<li>
+<p><strong class="highlight-text">Revenue Quality:</strong> 7.4% comparable sales growth driven by 5.3% traffic gains and operational efficiency, with menu price contributions declining to 2.9% from 5.2% in 2023  </p>
+</li>
+<li>
+<p><strong class="highlight-text">Labor Cost Containment:</strong> Maintained 24.7% labor cost ratio despite $2.8 billion absolute spend (+14.3% YoY), leveraging sales growth and Hyphen automation systems  </p>
+</li>
+<li>
+<p><strong class="highlight-text">Working Capital Efficiency:</strong> $46.1 million growth in unearned revenue reflects digital order prepayments, complementing $29.3 million reduction in accounts receivable  </p>
+</li>
+</ul>
+<p>Free cash flow conversion reached 98.5% (FCF/Net Income), demonstrating sustainable cash generation despite $3.4 billion in food costs (29.8% of revenue).</p>
+<h3 class="section-heading"><strong class="highlight-text">2. Investment Strategy and Capital Allocation</strong></h3>
+<p>$593.6 million capital expenditures funded three priorities:<br />
+1. <strong class="highlight-text">Unit Economics:</strong> 304 new restaurants with majority featuring Chipotlane drive-thrus<br />
+2. <strong class="highlight-text">Productivity Tech:</strong> Hyphen automation achieving 15% throughput gains in test markets<br />
+3. <strong class="highlight-text">Innovation Pipeline:</strong> $63 million deployed through Cultivate Next Fund  </p>
+<p>This balanced approach (4.1% CAPEX/Sales ratio) maintained 22.3% restaurant-level margins while positioning for 315-345 planned 2025 openings through internal funding.</p>
+<h3 class="section-heading"><strong class="highlight-text">3. Financing Activities and Capital Structure</strong></h3>
+<p>Conservative balance sheet management provides strategic flexibility:</p>
+<ul>
+<li>
+<p><strong class="highlight-text">Liquidity Composition:</strong> $748.5 million cash + $1.57 billion investments = $2.3 billion available resources  </p>
+</li>
+<li>
+<p><strong class="highlight-text">Shareholder Returns:</strong> $1.0 billion share repurchases executed with $1.03 billion remaining authorization  </p>
+</li>
+<li>
+<p><strong class="highlight-text">Debt Profile:</strong> Zero borrowings outstanding with $500 million undrawn credit facility  </p>
+</li>
+</ul>
+<p>The capital structure demonstrates 2.8x coverage of annual CAPEX through liquid reserves, avoiding industry-standard debt financing practices.</p>
+<h3 class="section-heading"><strong class="highlight-text">4. Cash Flow Sustainability Assessment</strong></h3>
+<p>Chipotle's financial architecture shows unique resilience through:</p>
+<ul>
+<li>
+<p><strong class="highlight-text">Reinvestment Capacity:</strong> $1.5 billion annual free cash flow funds 2.5 years of current CAPEX needs  </p>
+</li>
+<li>
+<p><strong class="highlight-text">Inflation Buffers:</strong> 18.6% operating cash flow margin provides cushion against $340 million annual food cost increases  </p>
+</li>
+<li>
+<p><strong class="highlight-text">Digital Momentum:</strong> 5.3% transaction growth without price reliance suggests structural traffic advantages  </p>
+</li>
+</ul>
+<p>Key watchpoints include maintaining labor productivity as wages rise industry-wide and optimizing $181.8 million in outstanding gift card liabilities (Chunk 61) as customer credit.  </p>
+<h3 class="section-heading"><strong class="highlight-text">Conclusion</strong></h3>
+<p>Chipotle's cash flow engine combines operational discipline (98.5% FCF conversion) with strategic capital deployment, funding both 8.3% unit growth and substantial shareholder returns. The 7.4% comparable sales gain with reduced pricing dependency highlights superior brand positioning. Sustaining this trajectory requires continued tech-led productivity gains to offset the $3.4 billion food cost base in an inflationary environment.</p>
+                </div>
+            
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Generated on April 05, 2025</p>
+    </footer>
+    
+    <script>
+        function openTab(evt, tabName) {
+            var i, tabContent, tabButtons;
+            
+            // Hide all tab content
+            tabContent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabContent.length; i++) {
+                tabContent[i].style.display = "none";
+                tabContent[i].className = tabContent[i].className.replace(" active", "");
+            }
+            
+            // Deactivate all buttons
+            tabButtons = document.getElementsByClassName("tab-button");
+            for (i = 0; i < tabButtons.length; i++) {
+                tabButtons[i].className = tabButtons[i].className.replace(" active", "");
+            }
+            
+            // Show the current tab and activate the button
+            document.getElementById(tabName).style.display = "block";
+            document.getElementById(tabName).className += " active";
+            evt.currentTarget.className += " active";
+        }
+    </script>
+</body>
+</html>
+    

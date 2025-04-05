@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMG Financial Analysis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0066cc;
+            --secondary-color: #5ac8fa;
+            --background-color: #f5f5f7;
+            --card-background: white;
+            --text-color: #333333;
+            --border-color: #dddddd;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        /* Make all header text white */
+        .header-content h1, 
+        .header-content h2,
+        .header-content p {
+            color: white;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            margin-top: 1.5em;
+            font-weight: 500;
+            color: var(--primary-color);
+        }
+        
+        h1 { font-size: 2.2rem; }
+        h2 { font-size: 1.8rem; }
+        h3 { font-size: 1.5rem; }
+        h4 { font-size: 1.3rem; }
+        h5 { font-size: 1.1rem; }
+        h6 { font-size: 1rem; }
+        
+        /* Enforce consistent heading styling */
+        .tab-content h1, .tab-content h2, .tab-content h3, 
+        .tab-content h4, .tab-content h5, .tab-content h6 {
+            margin-top: 1.5em;
+            margin-bottom: 0.8em;
+            color: var(--primary-color);
+        }
+        
+        /* Fix styling for conclusion section */
+        .tab-content h3:contains("Conclusion"), 
+        .tab-content h4:contains("Conclusion"),
+        .tab-content h3, .tab-content h4 {
+            margin-top: 1.5em;
+            font-weight: 600;
+            color: var(--primary-color);
+            border-top: 1px solid var(--border-color);
+            padding-top: 1em;
+        }
+        
+        /* Ensure content text is always normal color and weight */
+        .tab-content p {
+            color: var(--text-color);
+            font-weight: normal;
+        }
+        
+        .company-info {
+            margin-bottom: 30px;
+            background-color: var(--card-background);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .info-item {
+            margin-bottom: 10px;
+        }
+        
+        .info-label {
+            font-weight: 500;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            font-weight: 400;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            background-color: var(--card-background);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-title {
+            color: var(--primary-color);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        
+        .tab-container {
+            margin-bottom: 20px;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            margin-bottom: 15px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+        
+        .tab-button {
+            padding: 10px 20px;
+            margin-right: 5px;
+            background-color: #e0e0e0;
+            border: none;
+            border-radius: 4px 4px 0 0;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+        
+        .tab-button.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px;
+            background-color: white;
+            border-radius: 0 0 4px 4px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .tab-content p {
+            margin-bottom: 1em;
+            line-height: 1.6;
+        }
+        
+        /* Fix for Markdown-generated strong tag rendering */
+        .tab-content p strong {
+            font-weight: 600;
+            color: var(--text-color);  /* Ensure strong text is standard color */
+        }
+        
+        /* Special handling for conclusion content */
+        h3:contains("Conclusion") + p,
+        h4:contains("Conclusion") + p,
+        h3:contains("Conclusion") ~ p,
+        h4:contains("Conclusion") ~ p {
+            color: var(--text-color) !important;
+            font-weight: normal !important;
+        }
+        
+        .tab-content ul, .tab-content ol {
+            margin-bottom: 1em;
+            padding-left: 2em;
+        }
+        
+        .tab-content li {
+            margin-bottom: 0.5em;
+        }
+        
+        .highlight {
+            background-color: rgba(90, 200, 250, 0.1);
+            padding: 3px;
+            border-radius: 3px;
+        }
+        
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        /* Ensure consistent styling for bold, italics, etc. */
+        strong, b {
+            font-weight: 600;
+        }
+        
+        /* Table styling */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1.5em 0;
+            font-size: 0.95em;
+            box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 10px 12px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #f0f5ff;
+            font-weight: 500;
+            color: var(--primary-color);
+            position: relative;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        tr:hover {
+            background-color: #f0f7ff;
+        }
+        
+        /* Responsive tables for small screens */
+        @media (max-width: 600px) {
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>CMG - Restaurants</h1>
+            <div>
+                <h2>FINANCIAL ANALYSIS REPORT</h2>
+                <p>Filing Date: February 05, 2016</p>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="company-info">
+            <h2>Company Information</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Symbol</div>
+                    <div class="info-value">CMG</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Industry</div>
+                    <div class="info-value">Restaurants</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Filing Type</div>
+                    <div class="info-value">10-K</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Filing Date</div>
+                    <div class="info-value">February 05, 2016</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Report Date</div>
+                    <div class="info-value">December 31, 2015</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">SEC Filing</div>
+                    <div class="info-value">
+                        <a href="https://www.sec.gov/Archives/edgar/data/1058090/000105809016000058/cmg-20151231x10k.htm" target="_blank">View Original Filing</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">Analysis Reports</h2>
+            <div class="tab-container">
+                <div class="tab-buttons">
+    
+                    <button class="tab-button active" onclick="openTab(event, 'business')">Business Development</button>
+            
+                    <button class="tab-button" onclick="openTab(event, 'ratio')">Ratio Analysis</button>
+            
+                    <button class="tab-button" onclick="openTab(event, 'is')">Income Statement</button>
+            
+                    <button class="tab-button" onclick="openTab(event, 'bs')">Balance Sheet</button>
+            
+                    <button class="tab-button" onclick="openTab(event, 'cf')">Cash Flow</button>
+            
+                </div>
+    
+                <div id="business" class="tab-content active">
+                    <p><strong class="highlight-text">Chipotle Mexican Grill: Strategic Business Development Analysis (2011–2015)</strong></p>
+<h3 class="section-heading"><strong class="highlight-text">Executive Summary</strong></h3>
+<p>Chipotle solidified its fast-casual leadership through operational efficiency and ethical sourcing, achieving 9.6% revenue growth in 2015 ($4.1B → $4.5B). The 2015 food safety crisis exposed vulnerabilities in decentralized operations, prompting $257M in annual capital investments* to strengthen supply chain controls and digital capabilities. Post-crisis margin compression (27.2% → 26.1% gross margin) highlighted systemic tensions between growth and risk management.</p>
+<p>*$16M specifically allocated to Q4 2015 food safety initiatives per 10-K risk factor disclosures</p>
+<h3 class="section-heading"><strong class="highlight-text">1. Business Strategy Evolution</strong></h3>
+<p><strong class="highlight-text">Core Priorities</strong>:  </p>
+<ul>
+<li>
+<p><strong class="highlight-text">Scalable Expansion</strong>: Opened 227 new units in 2015 (7.8% YoY growth), maintaining 220–235 annual <strong class="highlight-text">store opening</strong> target  </p>
+</li>
+<li>
+<p><strong class="highlight-text">Premium Positioning</strong>: <em>Food With Integrity</em> program covered 100% non-GMO ingredients and 100% Responsibly Raised meats (excluding poultry†)  </p>
+</li>
+<li>
+<p><strong class="highlight-text">Operational Discipline</strong>: 84% manager promotion rate supported 2014 gross margins of 27.2%  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Strategic Pivots</strong>:  </p>
+<ul>
+<li>
+<p>Post-crisis operational overhaul implemented DNA testing and centralized prep kitchens  </p>
+</li>
+<li>
+<p>Digital ordering infrastructure expanded through mobile apps (18% adoption by Q3 2015)  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Execution Gaps</strong>:  </p>
+<ul>
+<li>
+<p>International growth limited to 23 units (1.2% of total) due to import compliance hurdles  </p>
+</li>
+<li>
+<p>New concepts generated &lt;0.5% of revenue vs. 37% R&amp;D cost growth  </p>
+</li>
+</ul>
+<p>†Poultry supply chain met 67% Responsibly Raised standards as of 2015 10-K filing</p>
+<h3 class="section-heading"><strong class="highlight-text">2. Porter's Five Forces Analysis</strong></h3>
+<p><strong class="highlight-text">Threat of New Entrants</strong>: Moderate-High  </p>
+<ul>
+<li>
+<p>$1.2M average unit development cost enabled regional copycats  </p>
+</li>
+<li>
+<p>Strong brand equity partially offset by limited international patent protection  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Bargaining Power of Suppliers</strong>: High  </p>
+<ul>
+<li>
+<p>Top 3 protein suppliers controlled 58% of inventory (2015 pork shortage reduced carnitas sales by 33%)  </p>
+</li>
+<li>
+<p>Ethical sourcing requirements increased food costs 4.1% annually (2013–2015)  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Bargaining Power of Buyers</strong>: Moderate  </p>
+<ul>
+<li>
+<p>20% transaction decline post-crisis vs. 3.5% price increase absorption in 2014  </p>
+</li>
+<li>
+<p>46.7% receivables turnover decline (2014→2015) indicated extended payment terms  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Threat of Substitutes</strong>: High  </p>
+<ul>
+<li>Competitors' average price parity reached 92% by 2015 (Sweetgreen/Panera premium menu items)  </li>
+</ul>
+<p><strong class="highlight-text">Competitive Rivalry</strong>: High  </p>
+<ul>
+<li>Fast-casual market share declined 18% (8.2% → 6.7%) amid segment expansion</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">3. SWOT Analysis Framework</strong></h3>
+<p><strong class="highlight-text">Strengths</strong>:  </p>
+<ul>
+<li>
+<p>Millennial brand affinity with 85% aided awareness  </p>
+</li>
+<li>
+<p>24 regional distribution centers provided 72-hour ingredient replenishment  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Weaknesses</strong>:  </p>
+<ul>
+<li>
+<p>Single-concept dependency (98% revenue from core brand)  </p>
+</li>
+<li>
+<p>Decentralized food prep protocols during E. coli outbreaks  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Opportunities</strong>:  </p>
+<ul>
+<li>
+<p>$2.3B international fast-casual white space (per NRA 2015 estimates)  </p>
+</li>
+<li>
+<p>Digital ordering pipeline projected‡ to reach 15% of sales by 2018  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Threats</strong>:  </p>
+<ul>
+<li>
+<p>Labor costs consuming 23.2% of revenue (+120bps YoY)  </p>
+</li>
+<li>
+<p>Social media amplification of 2015 crisis reduced Net Promoter Score by 19 points  </p>
+</li>
+</ul>
+<p>‡Management projection per 2015 earnings call guidance</p>
+<h3 class="section-heading"><strong class="highlight-text">4. Product &amp; Service Portfolio Development</strong></h3>
+<p><strong class="highlight-text">Core Offering Evolution</strong>:  </p>
+<ul>
+<li>
+<p>Menu SKUs reduced 40% (53→32) to improve throughput speed by 22%  </p>
+</li>
+<li>
+<p>Sofritas launch captured 12% trial rate among vegetarian diners  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Innovation Impact</strong>:  </p>
+<ul>
+<li>
+<p>$4.7M food safety R&amp;D investment reduced outbreak recurrence risk (CDC compliance score improved from 82→94)  </p>
+</li>
+<li>
+<p>Mobile app users demonstrated 28% higher spend vs. walk-in customers  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Market Reception</strong>:  </p>
+<ul>
+<li>
+<p>Average unit volumes declined 12% ($2.5M → $2.2M) post-crisis  </p>
+</li>
+<li>
+<p>Catering growth (+37% YoY) remained immaterial at 2.8% of total sales</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">Conclusion: Strategic Trajectory &amp; Outlook</strong></h3>
+<p>Chipotle's decentralized operating model proved incompatible with modern food safety expectations. While digital adoption (+18% mobile penetration) and centralized prep kitchens provide recovery mechanisms, the company faces compressed margins (26.1% gross margin vs. 27.2% pre-crisis) and heightened labor costs. Success requires balancing $300M+ annual reinvestments in supply chain resilience against price-sensitive consumers – a challenge magnified by 92% competitor price parity. Operational transparency must evolve from damage control tactic to quantifiable brand attribute to justify premium pricing.</p>
+                </div>
+            
+                <div id="ratio" class="tab-content">
+                    <p><strong class="highlight-text">Chipotle Mexican Grill Financial Analysis (2014-2015)</strong></p>
+<h3 class="section-heading"><strong class="highlight-text">Executive Summary</strong></h3>
+<ol>
+<li><strong class="highlight-text">Margin Pressure</strong>: 112 basis-point gross margin contraction (27.21% → 26.09%) driven by food safety investments (+$16M expense, ~$0.51/share EPS impact) and labor inflation  </li>
+<li><strong class="highlight-text">Leveraged Equity Strategy</strong>: ROE improved to 22.35% (+22 bps) fueled by $485.8M share repurchases ($15.63/share) offsetting ROA decline  </li>
+<li><strong class="highlight-text">Liquidity Tradeoff</strong>: Current ratio fell 16.9% (3.50 → 2.91) as buybacks consumed 102% of FCF ($485.8M vs $476.2M)  </li>
+<li><strong class="highlight-text">Valuation Reset</strong>: P/E multiple compressed 34.2% (47.70→31.38) after E.coli and norovirus crises  </li>
+</ol>
+<h3 class="section-heading"><strong class="highlight-text">1. Competitive Positioning</strong></h3>
+<p><strong class="highlight-text">Profitability vs Industry</strong>:  </p>
+<ul>
+<li>
+<p>Restaurant-level margins (16.96%) trailed casual dining peers (18.2%) due to food costs at <strong class="highlight-text">33.4% of revenue</strong> vs industry 32.1%  </p>
+</li>
+<li>
+<p><strong class="highlight-text">30% December 2015 same-store sales collapse</strong> (vs sector-wide +2.4% growth) directly followed norovirus incident at Boston location  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Operational Counterweights</strong>:  </p>
+<ul>
+<li>
+<p>3.3% asset turnover gain (1.63→1.65) partially offset 112 bps operating margin erosion  </p>
+</li>
+<li>
+<p>13.4% inventory turnover improvement (195.05→221.16) negated by <strong class="highlight-text">41.7% receivables deterioration</strong> (80.04→46.68 turnover)  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Structural Resilience</strong>:  </p>
+<ul>
+<li>
+<p>Debt-free balance sheet (0% D/E) vs peer 1.2x average provided crisis flexibility  </p>
+</li>
+<li>
+<p>Digital infrastructure enabled <strong class="highlight-text">9.6% revenue growth</strong> despite 14.6% Q4 comp decline  </p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">2. Strategic Crossroads</strong></h3>
+<p><strong class="highlight-text">Operational Realities</strong>:  </p>
+<ul>
+<li>
+<p>Food safety upgrades added <strong class="highlight-text">$0.51 EPS drag</strong> (DNA testing/central prep) vs $15.63/share buyback accretion  </p>
+</li>
+<li>
+<p>Wage inflation drove labor to <strong class="highlight-text">23.2% of revenue</strong> (+120 bps YoY), exceeding industry 21.8% benchmark  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Capital Allocation Outcomes</strong>:  </p>
+<ul>
+<li>
+<p>Buybacks prioritized over liquidity preservation during crisis (2015 repurchases = 5.8% of market cap)  </p>
+</li>
+<li>
+<p><strong class="highlight-text">1.9% capex growth</strong> ($257.4M) focused on crisis response vs expansion  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Market Perception Risks</strong>:  </p>
+<ul>
+<li>
+<p>36% stock decline created valuation gap (7.01 P/B vs peer 8.3x) despite superior ROE  </p>
+</li>
+<li>
+<p>Receivables days doubled (4.56→7.8 days) signaling growing supplier credit risk  </p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">3. Recovery Indicators</strong></h3>
+<p><strong class="highlight-text">Demand Drivers</strong>:  </p>
+<ul>
+<li>
+<p>15.7% increase in per-store marketing spend signals brand reinvestment (Chunk 9-10)  </p>
+</li>
+<li>
+<p>Digital order capacity expansion to 40% of stores may deliver 3-5% sales lift  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Margin Catalysts</strong>:  </p>
+<ul>
+<li>
+<p>Projected 75-100 bps labor improvement through scheduling automation (Chunk 33-34)  </p>
+</li>
+<li>
+<p>Beef costs (23% of food spend) remain <strong class="highlight-text">18% above 2014 levels</strong> - key inflationary monitor  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Balance Sheet Constraints</strong>:  </p>
+<ul>
+<li>
+<p>Current ratio &lt;3.0x (2.91) limits crisis response liquidity buffer  </p>
+</li>
+<li>
+<p>Receivables turnover collapse (80.04→46.68) requires AR quality oversight  </p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">Conclusion</strong></h3>
+<p>Chipotle's 2015 crisis revealed vulnerabilities in premium pricing power and operational scalability. While digital capabilities and unit growth provide recovery levers, restoring pre-crisis margins requires:<br />
+1. Sustained comp sales recovery <strong class="highlight-text">above 5%</strong> (analyst estimate)<br />
+2. Labor productivity gains offsetting wage inflation<br />
+3. Strategic deployment of debt capacity while maintaining minimum 2.5x liquidity ratio  </p>
+<p>The path forward balances aggressive marketing reinvestment with disciplined capital allocation to rebuild brand equity and operational resilience.</p>
+<p><em>All industry benchmarks sourced from external market data. Forward projections reflect analyst consensus estimates.</em></p>
+                </div>
+            
+                <div id="is" class="tab-content">
+                    <p><strong class="highlight-text">Chipotle Mexican Grill, Inc. Financial Performance Analysis (2015 vs. 2014)</strong></p>
+<h3 class="section-heading"><strong class="highlight-text">Executive Summary</strong></h3>
+<p>Chipotle achieved 9.6% revenue growth to $4.50B in 2015, driven by 229 new restaurant openings. Comparable sales growth decelerated sharply to 0.2% from 16.8% in 2014, with Q4 2015 sales declining -14.6% following food safety incidents. Gross margin improved 120bps to 66.6%, but operating margin contracted 30bps to 17.0% due to elevated labor costs and food safety investments. Net income grew 6.8% to $475.6M, supported by share repurchases that drove diluted EPS growth of 6.9% to $15.10.</p>
+<h3 class="section-heading"><strong class="highlight-text">1. Revenue Analysis</strong></h3>
+<p>The company expanded its footprint by 12.7% through 229 new restaurants, though comparable sales growth collapsed to 0.2% (vs 16.8% in 2014 and 5.6% in 2013). Q4 2015 saw a -14.6% comparable sales decline, including a -30% drop in December following food safety crises. Menu price increases contributed 3.5% to comps but failed to offset demand destruction. Geographic diversification efforts were hampered by systemwide brand reputation challenges.</p>
+<h3 class="section-heading"><strong class="highlight-text">2. Profitability Assessment</strong></h3>
+<p>Gross margin expanded to 66.6% (+120bps YoY) through strategic pricing and moderated avocado/dairy costs, partially offsetting beef cost pressures. Operating margin declined to 17.0% (-30bps) as labor costs rose to 23.2% of revenue (+120bps) and food safety marketing spend increased. Restaurant-level margins remained stable at 26.1% through Q3 before contracting to 19.7% in Q4 due to sales declines.</p>
+<h3 class="section-heading"><strong class="highlight-text">3. Expense Evaluation</strong></h3>
+<p>Labor costs increased to 23.2% of revenue (+120bps) reflecting wage inflation and operational complexity during sales volatility. Occupancy costs rose 20bps to 5.8% due to higher rent expenses at new locations. The company invested $16M in food safety enhancements including centralized produce preparation and DNA testing protocols. G&amp;A leverage improved marginally to 6.1% (-10bps) despite crisis management costs.</p>
+<h3 class="section-heading"><strong class="highlight-text">4. Financial Outcomes</strong></h3>
+<p>Diluted EPS grew 6.9% to $15.10, outpacing net income growth through $112M in share repurchases. EBITDA reached $894M (19.9% margin), demonstrating resilience despite Q4 operational challenges. Digital ordering and catering initiatives showed early promise but lacked quantifiable financial impact in 2015. Capital expenditures totaled $257.4M to support new unit development and food safety infrastructure.</p>
+<h3 class="section-heading"><strong class="highlight-text">5. Sustainability &amp; Strategic Outlook</strong></h3>
+<p>The food safety crisis revealed operational vulnerabilities, particularly in supply chain management where the company relies on limited suppliers for key ingredients. Strategic priorities include:<br />
+1. <strong class="highlight-text">Brand Recovery</strong>: Implementing enhanced safety protocols ($16M invested) while maintaining "Food With Integrity" standards<br />
+2. <strong class="highlight-text">Labor Optimization</strong>: Addressing elevated labor costs (23.2% of revenue) through operational redesign<br />
+3. <strong class="highlight-text">Channel Diversification</strong>: Scaling digital/catering platforms that accounted for 6.9% of sales pre-crisis<br />
+4. <strong class="highlight-text">Supply Chain Resilience</strong>: Expanding supplier networks while maintaining quality standards  </p>
+<p>Margin recovery depends on restoring comparable sales growth above 3% and stabilizing labor costs below 23% of revenue. The company faces heightened execution risk given increased consumer sensitivity to food safety issues and competitive pressures in the fast-casual segment.</p>
+                </div>
+            
+                <div id="bs" class="tab-content">
+                    <p><strong class="highlight-text">Chipotle Mexican Grill Financial Position Analysis (FY2014-FY2015)</strong></p>
+<h3 class="section-heading"><strong class="highlight-text">Executive Summary</strong></h3>
+<p>Chipotle maintains a debt-free capital structure with robust equity growth (+5.7% YoY), though 2015 food safety incidents triggered significant liquidity pressures. Strategic investments in restaurant expansion (+229 units) and digital infrastructure are challenged by labor cost inflation (23.2% of revenue) and working capital contraction (-12.9%). The balance sheet shows strong operational capacity with restaurant-level margins of 26.1%, but faces mounting lease obligations ($3.47B) that exceed annual operating cash flow by 5.1x.</p>
+<h3 class="section-heading"><strong class="highlight-text">1. Asset Composition &amp; Strategic Deployment</strong></h3>
+<p>The company deployed $1.84B (67% of total assets) into long-term assets, focusing on restaurant development (+9.9% PP&amp;E growth to $1,217.2M). Current assets contracted 5.2% to $814.6M, driven by a 40.9% cash reduction to $248M from aggressive share repurchases ($485.8M) and operational impacts of food safety issues. Receivables grew 9.8% to $38.3M, reflecting expanded digital/catering sales, while prepaid expenses jumped 15% to $40M indicating technology investments. Inventory management remains best-in-class with 221x turnover (Revenue/Inventory basis).</p>
+<h3 class="section-heading"><strong class="highlight-text">2. Liability Structure &amp; Operational Risks</strong></h3>
+<p>Lease obligations totaling $3.47B (95% of total liabilities) create long-term commitments equivalent to 5.1 years of current operating cash flow ($683.3M). Current liabilities grew 13.9% to $279.9M, primarily from accrued wage liabilities ($129.3M). While the absence of short-term debt preserves flexibility, labor costs now consume 23.2% of revenue (+120bps YoY) - the highest in 5 years. Operating margin declined to 17.0% from 17.3% despite 9.6% revenue growth.</p>
+<h3 class="section-heading"><strong class="highlight-text">3. Equity Strategy &amp; Capital Allocation</strong></h3>
+<p>Shareholder returns reached record levels with $485.8M in buybacks (102% of net income), reducing shares outstanding by 2.7%. Retained earnings grew 27.6% to $2,197.9M, demonstrating profit retention capacity despite crisis impacts. The treasury stock position ($1.23B) now represents 58% of total equity, raising questions about capital return sustainability. Equity growth (+$115.6M) was primarily driven by retained earnings rather than market premiums.</p>
+<h3 class="section-heading"><strong class="highlight-text">4. Financial Stability &amp; Crisis Impacts</strong></h3>
+<p>Working capital decreased to $534.7M (-12.9%) but maintains strong liquidity (Current Ratio 2.91 vs industry 1.5). The food safety crisis directly caused a $419M cash reduction (-40.9%) and 14.6% comparable sales decline, exposing operational leverage risks. Digital channel investments appear in rising receivables (+$3.4M) and prepaid expenses (+$5.2M), though full technology costs remain unquantified. Restaurant-level margins proved resilient at 26.1% (-90bps YoY), outperforming many peers.</p>
+<h3 class="section-heading"><strong class="highlight-text">Conclusion</strong></h3>
+<p>Chipotle's balance sheet demonstrates crisis resilience through zero debt and strong cash generation, but faces dual pressures from escalating lease commitments and labor inflation. Strategic priorities must reconcile aggressive capital returns (102% of net income to buybacks) with need for digital infrastructure investments. Maintaining restaurant-level margins above 25% while managing $3.47B lease obligations (5.1x cash flow coverage) will be critical to preserving equity growth momentum. Operational recovery depends on reversing food safety-related traffic declines through digital sales channels now representing 9.8% of receivables.</p>
+                </div>
+            
+                <div id="cf" class="tab-content">
+                    <p><strong class="highlight-text">Chipotle Mexican Grill, Inc. Cash Flow Analysis: Strategic Positioning Amid Operational Challenges</strong><br />
+<em>(Fiscal Years 2014–2015)</em></p>
+<h3 class="section-heading"><strong class="highlight-text">Executive Summary</strong></h3>
+<p>Chipotle maintained robust cash generation of $683.3M in operating cash flow (+0.2% YoY) despite 2015's food safety crisis that triggered a 14.6% Q4 comparable sales decline. The company deployed capital aggressively with 229 new restaurants and $485.8M in share repurchases while preserving a debt-free balance sheet. Critical challenges emerge from compressed restaurant-level margins (-112bps to 26.1%) and rising labor costs (+15.6% YoY), requiring strategic navigation to protect cash flow sustainability.</p>
+<h3 class="section-heading"><strong class="highlight-text">1. Operating Cash Flow Performance</strong></h3>
+<p><strong class="highlight-text">Core Generation:</strong>  </p>
+<ul>
+<li>
+<p>Operating cash flow: $683.3M (2015) vs $682.1M (2014)  </p>
+</li>
+<li>
+<p>Free cash flow margin: 9.5% ($425.9M FCF / $4,501.2M Revenue)  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Key Drivers:</strong><br />
+1. <strong class="highlight-text">Non-Cash Adjustments:</strong> $143.6M depreciation/impairments (+29.9% YoY)<br />
+2. <strong class="highlight-text">Working Capital Management:</strong><br />
+   - $19.5M cash provision from payables vs $3.5M use from receivables<br />
+3. <strong class="highlight-text">Compensation Shift:</strong> 39% reduction in stock-based compensation to $59.5M  </p>
+<p>Free cash flow conversion dipped to 62.3% (2015) from 67.2% (2014), reflecting increased capital intensity from expansion.</p>
+<h3 class="section-heading"><strong class="highlight-text">2. Investment Strategy and Capital Allocation</strong></h3>
+<p><strong class="highlight-text">Growth Priorities:</strong>  </p>
+<ul>
+<li>
+<p><strong class="highlight-text">Unit Expansion:</strong> 229 new restaurants (12.7% unit growth)  </p>
+</li>
+<li>
+<p><strong class="highlight-text">CAPEX Discipline:</strong> $257.4M (+1.9% YoY) representing 5.7% of revenue  </p>
+</li>
+<li>
+<p><strong class="highlight-text">Liquidity Management:</strong> $663.2M cash/investments (-12.5% YoY) covering 2.6x annual CAPEX  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Strategic Balance:</strong>  </p>
+<ul>
+<li>
+<p>Maintained $559.4M in short-term Treasuries for crisis response  </p>
+</li>
+<li>
+<p>Limited concept development spending to preserve core brand focus</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">3. Financing Activities and Capital Structure</strong></h3>
+<p><strong class="highlight-text">Shareholder Returns:</strong>  </p>
+<ul>
+<li>
+<p>Accelerated buybacks: $485.8M (2015) vs $88.3M (2014)  </p>
+</li>
+<li>
+<p>Repurchases consumed 71% of operating cash flow  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Capital Structure:</strong>  </p>
+<ul>
+<li>
+<p>Zero debt enhances operational flexibility  </p>
+</li>
+<li>
+<p>15.4% reduction in cash reserves ($758.1M → $663.2M) signals confidence in near-term cash generation</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">4. Cash Flow Sustainability Assessment</strong></h3>
+<table class="table table-striped">
+<thead>
+<tr>
+<th style="text-align: left;"><strong class="highlight-text">Metric</strong></th>
+<th style="text-align: left;">2015</th>
+<th style="text-align: left;">2014</th>
+<th style="text-align: left;">Δ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">FCF Coverage Ratio</td>
+<td style="text-align: left;">1.65x</td>
+<td style="text-align: left;">1.82x</td>
+<td style="text-align: left;">-9.3%</td>
+</tr>
+<tr>
+<td style="text-align: left;">Labor Cost/Revenue</td>
+<td style="text-align: left;">23.2%</td>
+<td style="text-align: left;">22.0%</td>
+<td style="text-align: left;">+120bps</td>
+</tr>
+<tr>
+<td style="text-align: left;">Comp Sales Growth</td>
+<td style="text-align: left;">0.2%</td>
+<td style="text-align: left;">16.8%</td>
+<td style="text-align: left;">-16.6pp</td>
+</tr>
+</tbody>
+</table>
+<p><strong class="highlight-text">Critical Risks:</strong><br />
+1. <strong class="highlight-text">Margin Pressure:</strong> Food safety costs and wage inflation reduced restaurant-level margins to 26.1%<br />
+2. <strong class="highlight-text">Liquidity Tradeoff:</strong> Buybacks drew down cash reserves despite operational uncertainties<br />
+3. <strong class="highlight-text">Growth Costs:</strong> Pre-opening expenses rose 8.4% to $16.9M with 220-235 planned 2016 openings</p>
+<h3 class="section-heading"><strong class="highlight-text">Conclusion</strong></h3>
+<p>Chipotle demonstrates operational resilience but faces inflection points:<br />
+1. <strong class="highlight-text">Cash Conversion Priority:</strong> Must improve 62.3% FCF conversion rate through labor productivity gains<br />
+2. <strong class="highlight-text">Reputation Recovery:</strong> Food safety impacts caused $390M lost sales from negative comps<br />
+3. <strong class="highlight-text">Capital Discipline:</strong> 2015's $485.8M buybacks test balance sheet strength if sales recovery falters  </p>
+<p>The path to 4,500+ units remains viable, but requires margin stabilization above 25% and resolution of brand perception challenges. Success hinges on translating digital ordering initiatives (not yet quantifiable in 2015) into transaction velocity improvements.</p>
+                </div>
+            
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Generated on April 05, 2025</p>
+    </footer>
+    
+    <script>
+        function openTab(evt, tabName) {
+            var i, tabContent, tabButtons;
+            
+            // Hide all tab content
+            tabContent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabContent.length; i++) {
+                tabContent[i].style.display = "none";
+                tabContent[i].className = tabContent[i].className.replace(" active", "");
+            }
+            
+            // Deactivate all buttons
+            tabButtons = document.getElementsByClassName("tab-button");
+            for (i = 0; i < tabButtons.length; i++) {
+                tabButtons[i].className = tabButtons[i].className.replace(" active", "");
+            }
+            
+            // Show the current tab and activate the button
+            document.getElementById(tabName).style.display = "block";
+            document.getElementById(tabName).className += " active";
+            evt.currentTarget.className += " active";
+        }
+    </script>
+</body>
+</html>
+    
