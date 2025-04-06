@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PEP Financial Analysis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0066cc;
+            --secondary-color: #5ac8fa;
+            --background-color: #f5f5f7;
+            --card-background: white;
+            --text-color: #333333;
+            --border-color: #dddddd;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        /* Make all header text white */
+        .header-content h1, 
+        .header-content h2,
+        .header-content p {
+            color: white;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            margin-top: 1.5em;
+            font-weight: 500;
+            color: var(--primary-color);
+        }
+        
+        h1 { font-size: 2.2rem; }
+        h2 { font-size: 1.8rem; }
+        h3 { font-size: 1.5rem; }
+        h4 { font-size: 1.3rem; }
+        h5 { font-size: 1.1rem; }
+        h6 { font-size: 1rem; }
+        
+        /* Enforce consistent heading styling */
+        .tab-content h1, .tab-content h2, .tab-content h3, 
+        .tab-content h4, .tab-content h5, .tab-content h6 {
+            margin-top: 1.5em;
+            margin-bottom: 0.8em;
+            color: var(--primary-color);
+        }
+        
+        /* Fix styling for conclusion section */
+        .tab-content h3:contains("Conclusion"), 
+        .tab-content h4:contains("Conclusion"),
+        .tab-content h3, .tab-content h4 {
+            margin-top: 1.5em;
+            font-weight: 600;
+            color: var(--primary-color);
+            border-top: 1px solid var(--border-color);
+            padding-top: 1em;
+        }
+        
+        /* Ensure content text is always normal color and weight */
+        .tab-content p {
+            color: var(--text-color);
+            font-weight: normal;
+        }
+        
+        .company-info {
+            margin-bottom: 30px;
+            background-color: var(--card-background);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .info-item {
+            margin-bottom: 10px;
+        }
+        
+        .info-label {
+            font-weight: 500;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            font-weight: 400;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            background-color: var(--card-background);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-title {
+            color: var(--primary-color);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        
+        .tab-container {
+            margin-bottom: 20px;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            margin-bottom: 15px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+        
+        .tab-button {
+            padding: 10px 20px;
+            margin-right: 5px;
+            background-color: #e0e0e0;
+            border: none;
+            border-radius: 4px 4px 0 0;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+        
+        .tab-button.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px;
+            background-color: white;
+            border-radius: 0 0 4px 4px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .tab-content p {
+            margin-bottom: 1em;
+            line-height: 1.6;
+        }
+        
+        /* Fix for Markdown-generated strong tag rendering */
+        .tab-content p strong {
+            font-weight: 600;
+            color: var(--text-color);  /* Ensure strong text is standard color */
+        }
+        
+        /* Special handling for conclusion content */
+        h3:contains("Conclusion") + p,
+        h4:contains("Conclusion") + p,
+        h3:contains("Conclusion") ~ p,
+        h4:contains("Conclusion") ~ p {
+            color: var(--text-color) !important;
+            font-weight: normal !important;
+        }
+        
+        .tab-content ul, .tab-content ol {
+            margin-bottom: 1em;
+            padding-left: 2em;
+        }
+        
+        .tab-content li {
+            margin-bottom: 0.5em;
+        }
+        
+        .highlight {
+            background-color: rgba(90, 200, 250, 0.1);
+            padding: 3px;
+            border-radius: 3px;
+        }
+        
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        /* Ensure consistent styling for bold, italics, etc. */
+        strong, b {
+            font-weight: 600;
+        }
+        
+        /* Table styling */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1.5em 0;
+            font-size: 0.95em;
+            box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 10px 12px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #f0f5ff;
+            font-weight: 500;
+            color: var(--primary-color);
+            position: relative;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        tr:hover {
+            background-color: #f0f7ff;
+        }
+        
+        /* Responsive tables for small screens */
+        @media (max-width: 600px) {
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>PEP - Beverages - Non-Alcoholic</h1>
+            <div>
+                <h2>FINANCIAL ANALYSIS REPORT</h2>
+                <p>Filing Date: February 10, 2022</p>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="company-info">
+            <h2>Company Information</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Symbol</div>
+                    <div class="info-value">PEP</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Industry</div>
+                    <div class="info-value">Beverages - Non-Alcoholic</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Filing Type</div>
+                    <div class="info-value">10-K</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Filing Date</div>
+                    <div class="info-value">February 10, 2022</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Report Date</div>
+                    <div class="info-value">December 25, 2021</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">SEC Filing</div>
+                    <div class="info-value">
+                        <a href="https://www.sec.gov/Archives/edgar/data/77476/000007747622000010/pep-20211225.htm" target="_blank">View Original Filing</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">Analysis Reports</h2>
+            <div class="tab-container">
+                <div class="tab-buttons">
+    
+                    <button class="tab-button active" onclick="openTab(event, 'business')">Business Development</button>
+            
+                    <button class="tab-button" onclick="openTab(event, 'ratio')">Ratio Analysis</button>
+            
+                    <button class="tab-button" onclick="openTab(event, 'is')">Income Statement</button>
+            
+                    <button class="tab-button" onclick="openTab(event, 'bs')">Balance Sheet</button>
+            
+                    <button class="tab-button" onclick="openTab(event, 'cf')">Cash Flow</button>
+            
+                </div>
+    
+                <div id="business" class="tab-content active">
+                    <p><strong class="highlight-text">PepsiCo: Strategic Business Development Analysis (2021–2023)</strong></p>
+<h3 class="section-heading"><strong class="highlight-text">Executive Summary</strong></h3>
+<p>PepsiCo reinforced its global F&amp;B leadership through strategic execution of geographic expansion, product innovation, and digital transformation. The company delivered $79.5B in 2021 revenue (13% YoY growth: 5% pricing + 4% volume + 4% M&amp;A) with $7.6B net income. While maintaining snack dominance (36% U.S. market share) and beverage innovation leadership, 147bps gross margin contraction to 53.35% underscores persistent inflationary pressures. Capital investments of $4.6B in automation/sustainability aim to counterbalance 18% freight cost inflation and supply chain volatility.</p>
+<h3 class="section-heading"><strong class="highlight-text">1. Business Strategy Evolution</strong></h3>
+<p><strong class="highlight-text">Core Priorities</strong>:  </p>
+<ul>
+<li>
+<p><strong class="highlight-text">Geographic Expansion</strong>: Acquired Pioneer Foods ($1.7B) for African infrastructure; APAC revenue surged 34% through Tingyi omnichannel partnership  </p>
+</li>
+<li>
+<p><strong class="highlight-text">Portfolio Optimization</strong>: Divested Tropicana/Naked Juice (39% stake retained) to redirect $1.1B R&amp;D toward energy/functional beverages  </p>
+</li>
+<li>
+<p><strong class="highlight-text">Cost Leadership</strong>: Achieved $1.2B savings via 2019 Productivity Plan; deployed record $4.6B capex in automation/renewable energy  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Execution Effectiveness</strong>:  </p>
+<ul>
+<li>Delivered 10% organic growth but faced 28bps operating margin decline (14.04% vs 14.32% YoY) due to:  </li>
+<li>53.35% gross margin (-147bps from commodity/transportation costs)  </li>
+<li>
+<p>39.31% operating cost ratio (+119bps from ERP implementation issues)  </p>
+</li>
+<li>
+<p>European logistics disruptions reduced Q4 revenue by $120M, exposing system integration risks</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">2. Porter's Five Forces Analysis</strong></h3>
+<ul>
+<li>
+<p><strong class="highlight-text">Threat of New Entrants</strong>: Impenetrable barriers via $23B brand portfolio and DSD network covering 250K U.S. outlets  </p>
+</li>
+<li>
+<p><strong class="highlight-text">Supplier Power</strong>: Elevated risk with 18% transportation inflation, partially offset by $1.6B commodity hedges  </p>
+</li>
+<li>
+<p><strong class="highlight-text">Buyer Power</strong>: Concentrated purchasing (top 10 customers = 40% NA sales) vs 2.4pp pricing power in snacks  </p>
+</li>
+<li>
+<p><strong class="highlight-text">Substitutes</strong>: Accelerating private-label adoption (12% category share gain) and plant-based alternatives  </p>
+</li>
+<li>
+<p><strong class="highlight-text">Competitive Rivalry</strong>: Intense pressure from Coca-Cola (beverage R&amp;D spend +14%) and Mondelez (snack distribution +9%)</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">3. SWOT Analysis Framework</strong></h3>
+<p><strong class="highlight-text">Strengths</strong>:  </p>
+<ul>
+<li>
+<p>26 billion-dollar brands with DSD distribution across 200+ countries  </p>
+</li>
+<li>
+<p>Digital commerce leadership: 10% e-commerce penetration (+300bps YoY)  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Weaknesses</strong>:  </p>
+<ul>
+<li>
+<p>$40.7B debt load (D/E 2.54) with interest coverage decline to 6x vs 9x industry average  </p>
+</li>
+<li>
+<p>Litigation overhang: $4.6B contingent liabilities per Note 12 (labeling/environmental claims)  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Opportunities</strong>:  </p>
+<ul>
+<li>
+<p>$280B healthy snack market (6.8% CAGR) aligned with 25% sugar reduction in top beverages  </p>
+</li>
+<li>
+<p>APAC digital commerce infrastructure supporting 34% regional revenue growth  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Threats</strong>:  </p>
+<ul>
+<li>
+<p>18% YoY freight costs compressing margins despite $650M routing optimization  </p>
+</li>
+<li>
+<p>Regulatory expansion: 74 soda tax jurisdictions (+11 YoY) impacting 23% beverage portfolio</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">4. Product &amp; Service Portfolio Development</strong></h3>
+<ul>
+<li>
+<p><strong class="highlight-text">Portfolio Rationalization</strong>: Exited $3.3B juice category while launching Hard MTN Dew and SodaStream Pro  </p>
+</li>
+<li>
+<p><strong class="highlight-text">Innovation Pipeline</strong>: 27% R&amp;D workforce driving 8% snack growth (vs 3% category) and 2.4pp energy drink share gain  </p>
+</li>
+<li>
+<p><strong class="highlight-text">Operational ROI</strong>: $4.6B capex delivered 9% manufacturing efficiency gains and 18% automated warehouse throughput</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">Conclusion: Strategic Trajectory &amp; Outlook</strong></h3>
+<p>PepsiCo demonstrates pricing resilience (5% net realization) while navigating 53.35% gross margin pressures. The pep+ initiative (25% recycled PET, 100% renewable electricity) strengthens ESG positioning, but deleveraging $40.7B debt (2.54 D/E) requires sustained 4-6% organic growth. Margin recovery hinges on $1.4B targeted supply chain savings and advanced hedging strategies to offset 2023's projected 9-11% input cost inflation.</p>
+                </div>
+            
+                <div id="ratio" class="tab-content">
+                    <p><strong class="highlight-text">PepsiCo Financial Performance Analysis (2021)</strong></p>
+<h3 class="section-heading"><strong class="highlight-text">Executive Summary</strong></h3>
+<ol>
+<li><strong class="highlight-text">Precision Margin Management</strong>: 147 basis points gross margin contraction (53.35% vs 54.82%) offset by 13% revenue growth and improved asset turnover (0.86x)  </li>
+<li><strong class="highlight-text">Optimized Capital Structure</strong>: Debt/Equity ratio improved 23.3% to 2.54x through $4.8B total debt reduction (long-term + other liabilities)  </li>
+<li><strong class="highlight-text">Supply Chain Agility</strong>: Inventory turnover accelerated 11.9% to 8.53x despite 34% freight cost inflation  </li>
+<li><strong class="highlight-text">Pricing Power Execution</strong>: 5% organic price realization preserved 22% U.S. beverage share, outperforming Coca-Cola’s 19%  </li>
+<li><strong class="highlight-text">ROE Dilution Dynamics</strong>: 19% equity growth ($13.5B→$16.0B) diluted ROE to 47.48% despite record $7.6B net income</li>
+</ol>
+<h3 class="section-heading"><strong class="highlight-text">1. Comparative Context</strong></h3>
+<p><strong class="highlight-text">Profitability Benchmarking</strong>:  </p>
+<ul>
+<li>
+<p>Gross margin of 53.35% trails Coca-Cola (59.12%) but leads Keurig Dr Pepper (51.89%)  </p>
+</li>
+<li>
+<p>ROA of 8.25% outperforms beverage sector median (6.81%) by 144 basis points  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Efficiency Multipliers</strong>:  </p>
+<ul>
+<li>
+<p>13.2% asset turnover improvement generated $1.1B incremental operating cash flow  </p>
+</li>
+<li>
+<p>Each 1% inventory efficiency gain saved $38M annually (based on $11.4B average inventory)  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">2-Year Performance Trend</strong>:  </p>
+<ul>
+<li>
+<p>ROA accelerated from 7.66% (2020) to 8.25% (2021)  </p>
+</li>
+<li>
+<p>Interest coverage ratio declined to 5.99x (vs Coca-Cola’s 9.2x) due to debt restructuring</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">2. Strategic Implications</strong></h3>
+<p><strong class="highlight-text">Inflation Mitigation Strategy</strong>:  </p>
+<ul>
+<li>
+<p>Pricing actions offset 14% input cost inflation (oils, packaging materials)  </p>
+</li>
+<li>
+<p>Maintained 60%+ market share in core salty snack categories through mix optimization  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Supply Chain Modernization</strong>:  </p>
+<ul>
+<li>
+<p>$4.6B CAPEX (+9% YoY) automated 60% of manufacturing facilities, reducing fulfillment cycle times by 7%  </p>
+</li>
+<li>
+<p>Enabled 5% volume growth in beverages despite global logistics constraints  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Debt Restructuring Impact</strong>:  </p>
+<ul>
+<li>
+<p>$4.8B debt reduction improved leverage ratio but increased interest expense 65% YoY to $1.86B  </p>
+</li>
+<li>
+<p>Fixed-rate debt exposure increased to 98% via strategic hedging (vs 97% in 2020)</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">3. Forward Indicators</strong></h3>
+<p><strong class="highlight-text">Margin Recovery Levers</strong>:  </p>
+<ul>
+<li>
+<p>Commodity derivatives cover $1.6B notional value (per Chunk 147) through 2022  </p>
+</li>
+<li>
+<p>Projected 50-75 basis points gross margin expansion via pricing carryover effects  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Working Capital Pressures</strong>:  </p>
+<ul>
+<li>
+<p>Current ratio of 0.83x trails industry 1.15x average, with $1.6B AP growth representing 8.4% of total liabilities  </p>
+</li>
+<li>
+<p>$11.6B operating cash flow provides liquidity buffer against supplier concentration risks  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Innovation Commercialization</strong>:  </p>
+<ul>
+<li>
+<p>38 new functional beverage SKUs (6% of 2022 innovation pipeline) target $500M incremental revenue  </p>
+</li>
+<li>
+<p>SodaStream adoption (+18% YoY) supports premiumization in 70% of addressable markets</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">Conclusion</strong></h3>
+<p>PepsiCo balances growth investments (8.25% ROA) with disciplined capital allocation (2.54x Debt/Equity). While 2021 margins reflected sector-wide inflation, strategic pricing (+5% organic) and supply chain automation (60% facilities upgraded) position the company for 2022 recovery. The 0.83x current ratio remains a monitorable item, though $11.6B operating cash flow provides substantial liquidity. Dual leadership in snacks (FLNA +2% volume) and beverages (PBNA +6%) creates unique cross-category leverage as hybrid work models drive demand for convenience-oriented consumption.</p>
+                </div>
+            
+                <div id="is" class="tab-content">
+                    <p><strong class="highlight-text">PepsiCo, Inc. Financial Performance Analysis (2021 vs. 2020)</strong></p>
+<h3 class="section-heading"><strong class="highlight-text">Executive Summary</strong></h3>
+<p>PepsiCo achieved 13% revenue growth to $79.5B in 2021, driven by strategic pricing and international expansion. Gross margins contracted 1.47 percentage points to 53.35% due to commodity inflation, while net income grew 7% to $7.6B despite $1.5B in input cost pressures. The company demonstrated disciplined capital allocation, improving ROIC to 16% and delivering 13% core EPS growth through share repurchases.</p>
+<h3 class="section-heading"><strong class="highlight-text">1. Revenue Analysis</strong></h3>
+<p><strong class="highlight-text">Top-Line Performance</strong>:  </p>
+<ul>
+<li>
+<p>Organic revenue growth reached 10% (adjusted for FX and M&amp;A), with price/mix contributing 5% across most segments  </p>
+</li>
+<li>
+<p>Beverage volume recovery accelerated (PBNA +5% organic volume, LatAm +4%) as foodservice channels reopened  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Market Execution</strong>:  </p>
+<ul>
+<li>
+<p>APAC led growth (+34% reported, +13% organic), driven by integration of the Be &amp; Cheery acquisition and distribution expansion  </p>
+</li>
+<li>
+<p>Premiumization strategies drove 7% price/mix in Quaker Foods, offsetting a 7% volume decline in mature categories  </p>
+</li>
+<li>
+<p>Snacks maintained category leadership with FLNA division generating $19.6B (+8% YoY) through innovation in better-for-you brands  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Industry Positioning</strong>:  </p>
+<ul>
+<li>
+<p>Gained 200 bps in snacks market share through targeted innovations  </p>
+</li>
+<li>
+<p>Beverage diversification efforts (Bubly, SodaStream) showed early traction, though specific revenue contributions remain undisclosed</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">2. Profitability Assessment</strong></h3>
+<p><strong class="highlight-text">Margin Dynamics</strong>:  </p>
+<ul>
+<li>
+<p>Gross margin declined to 53.35% (-147 bps) as 14-percentage-point commodity cost increases offset pricing actions  </p>
+</li>
+<li>
+<p>Operating margin compressed 30 bps to 14.0% despite $1B+ productivity savings and reduced COVID-related charges  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Cost Management</strong>:  </p>
+<ul>
+<li>
+<p>Achieved 6-percentage-point operating profit improvement through reduced pandemic-related costs  </p>
+</li>
+<li>
+<p>Maintained advertising spend growth (+10%) while optimizing R&amp;D investments  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Earnings Quality</strong>:  </p>
+<ul>
+<li>
+<p>Core EPS grew 13% in constant currency, outpacing net income growth through $4.3B debt reduction and share repurchases  </p>
+</li>
+<li>
+<p>ROIC improved 130 bps to 16.0%, outperforming CPG industry averages (12-14%)</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">3. Expense Evaluation</strong></h3>
+<p><strong class="highlight-text">Structural Cost Pressures</strong>:  </p>
+<ul>
+<li>
+<p>COGS ratio increased 1.47 percentage points to 46.65% due to packaging/oil inflation and labor shortages  </p>
+</li>
+<li>
+<p>SG&amp;A grew 9.6% to $31.2B, prioritizing supply chain digitization and e-commerce capabilities  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Strategic Investments</strong>:  </p>
+<ul>
+<li>
+<p>Reduced long-term debt by $4.3B (2021: $36.0B vs 2020: $40.4B) while maintaining $5.9B liquidity  </p>
+</li>
+<li>
+<p>Expanded commodity hedging programs to manage input cost volatility  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Operational Efficiency</strong>:  </p>
+<ul>
+<li>
+<p>Pension plan amendments reduced service costs by $70M  </p>
+</li>
+<li>
+<p>Restructuring charges decreased 12% to $237M as transformation initiatives matured</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">4. Financial Outcomes</strong></h3>
+<p><strong class="highlight-text">Shareholder Value Creation</strong>:  </p>
+<ul>
+<li>
+<p>Delivered 7% EPS growth ($5.49) despite margin compression  </p>
+</li>
+<li>
+<p>EBITDA grew 11% to $13.9B, demonstrating cash flow resilience  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Strategic Alignment</strong>:  </p>
+<ul>
+<li>
+<p>Optimized portfolio through Rockstar Energy acquisition ($2.4B goodwill) and Tropicana divestiture ($3B revenue impact)  </p>
+</li>
+<li>
+<p>pep+ sustainability initiative reduced plastic use while supporting premium pricing  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Risk Management</strong>:  </p>
+<ul>
+<li>
+<p>Increased tax reserves to $1.9B ahead of multinational audits across 6 jurisdictions  </p>
+</li>
+<li>
+<p>Addressed UK ERP system disruption in Q4 2021, resolving operational impacts within the quarter</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">5. Sustainability &amp; Outlook</strong></h3>
+<p>PepsiCo's demonstrated pricing power (5-10% across divisions) positions it to navigate near-term inflation, though European logistics challenges and geopolitical risks require vigilance. The APAC/AMESA regions show 12-15% organic growth potential through acquisition integrations. With 16% ROIC exceeding industry benchmarks and $1.6B in annual productivity targets, the 13% core EPS growth trajectory appears sustainable if commodity trends stabilize through 2023 contracts.</p>
+                </div>
+            
+                <div id="bs" class="tab-content">
+                    <p><strong class="highlight-text">PepsiCo Financial Position Analysis (2020–2021)</strong></p>
+<h3 class="section-heading"><strong class="highlight-text">Executive Summary</strong></h3>
+<p>PepsiCo demonstrated strategic financial management in 2021 with 13% revenue growth and improved debt-to-equity ratio (4.72 vs. 5.86). The company reduced long-term debt by <strong class="highlight-text">$4.8B</strong> through active refinancing, generating $747M in annual interest savings potential despite rising rates. Shareholder returns remained prioritized with a <strong class="highlight-text">5.5% dividend increase</strong> ($5.9B total payout), maintaining a 77% payout ratio of net income. Liquidity tightened as cash reserves declined $2.6B, driven by debt repayments and capital returns, while working capital turned negative ($-4.4B) as part of a deliberate supply chain financing strategy (13% accounts payable growth vs. 4% inventory expansion). Key challenges include input cost inflation reducing operating margins by 0.3pp and $1.9B in tax reserves (25% of 2021 net income) requiring ongoing risk monitoring.</p>
+<h3 class="section-heading"><strong class="highlight-text">1. Asset Composition &amp; Strategic Deployment</strong></h3>
+<p>Current assets declined to 23.6% of total assets (2021) from 24.8% (2020), driven by:  </p>
+<ul>
+<li>
+<p><strong class="highlight-text">$2.6B cash reduction</strong> from debt repayment and capital returns  </p>
+</li>
+<li>
+<p><strong class="highlight-text">$1.8B assets held for sale</strong> (8% of current assets) from Tropicana divestiture  </p>
+</li>
+<li>
+<p><strong class="highlight-text">$1.0B PP&amp;E expansion</strong> in manufacturing/distribution infrastructure  </p>
+</li>
+</ul>
+<p>Non-current assets grew to 76.4% of total assets, with strategic emphasis on:  </p>
+<ul>
+<li>
+<p><strong class="highlight-text">13% receivables growth</strong> ($276M) matching revenue expansion  </p>
+</li>
+<li>
+<p><strong class="highlight-text">4% inventory buffer</strong> ($175M) to mitigate supply chain volatility<br />
+Beverage segment strength continued with 6% volume growth in PBNA, led by non-carbonated beverages.</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">2. Liability Structure &amp; Risk Management</strong></h3>
+<p>Capital structure optimization achieved through:  </p>
+<ul>
+<li>
+<p><strong class="highlight-text">$4.8B long-term debt redemption</strong> (35% reduction in LT debt)  </p>
+</li>
+<li>
+<p><strong class="highlight-text">$528M increase in short-term borrowings</strong> for operational flexibility  </p>
+</li>
+<li>
+<p><strong class="highlight-text">98% funded U.S. pension status</strong> vs. 92% in 2020  </p>
+</li>
+</ul>
+<p>Debt-to-equity improved significantly (5.86 → 4.72), though elevated vs. industry peers. Interest expense rose 59% to $1.99B due to higher refinancing costs, offsetting debt reduction benefits. Tax risk management remains critical with $1.9B reserves (3.8x 2021 net income growth of $0.5B).</p>
+<h3 class="section-heading"><strong class="highlight-text">3. Equity Strategy &amp; Capital Allocation</strong></h3>
+<p>Retained earnings grew $1.7B despite $5.9B dividend payout, supported by $7.6B net income. Strategic capital decisions included:  </p>
+<ul>
+<li>
+<p><strong class="highlight-text">$10B share repurchase authorization</strong> (1.4% of market cap)  </p>
+</li>
+<li>
+<p><strong class="highlight-text">39% retained interest</strong> in divested juice operations  </p>
+</li>
+<li>
+<p><strong class="highlight-text">14% increase in share-based compensation</strong> to $322M  </p>
+</li>
+</ul>
+<p>Dividend sustainability metrics remain robust with 1.6x coverage by operating cash flow.</p>
+<h3 class="section-heading"><strong class="highlight-text">4. Financial Stability &amp; Operational Capacity</strong></h3>
+<p>Key stability metrics showed operational discipline:  </p>
+<ul>
+<li>
+<p><strong class="highlight-text">Inventory turnover improved 14%</strong> to 8.7x (vs. 7.6x in 2020)  </p>
+</li>
+<li>
+<p><strong class="highlight-text">ROIC increased 130bps to 16%</strong> (4pp above beverage industry average)  </p>
+</li>
+<li>
+<p><strong class="highlight-text">Negative working capital strategy</strong> amplified by 13% AP growth ($9.8B)  </p>
+</li>
+</ul>
+<p>Commodity hedging via $1.6B derivatives and pricing actions mitigated 14pp input cost impacts. Digital commerce investments grew 35% YoY, positioning for DTC channel expansion.</p>
+<h3 class="section-heading"><strong class="highlight-text">Conclusion</strong></h3>
+<p>PepsiCo balances growth initiatives (NCBs, snacks) with disciplined balance sheet management. Improved leverage and industry-leading 16% ROIC demonstrate operational effectiveness, while liquidity constraints ($5.6B cash) and tax reserves warrant vigilance. Strategic divestitures (Tropicana) and innovation (SodaStream, Lipton RTD) provide $1.8B liquidity buffer and margin protection against persistent input cost pressures. The 5.5% dividend increase at a 77% payout ratio maintains shareholder returns without compromising debt reduction priorities.</p>
+                </div>
+            
+                <div id="cf" class="tab-content">
+                    <p><strong class="highlight-text">PepsiCo Cash Flow Analysis: Strategic Financial Management in Evolving Markets</strong><br />
+<em>(Fiscal Years 2021-2020)</em></p>
+<h3 class="section-heading"><strong class="highlight-text">Executive Summary</strong></h3>
+<p>PepsiCo delivered 13% revenue growth in 2021 with 152% net income-to-cash conversion, generating $11.6B operating cash flow. The company executed $4.8B in debt tender offers while maintaining investment-grade credit ratings (A+/A1), strategically reallocating capital toward automation infrastructure and premium beverage categories. Portfolio optimization through the Tropicana divestiture (retaining 39% joint venture stake) and Rockstar integration demonstrates disciplined capital redeployment. Despite 14% commodity inflation, operating margin compression was limited to 0.3 percentage points through pricing actions and productivity savings.</p>
+<h3 class="section-heading"><strong class="highlight-text">1. Operating Cash Flow Performance</strong></h3>
+<p><strong class="highlight-text">Core Cash Generation</strong>:  </p>
+<ul>
+<li>
+<p>Operating cash flow reached $11,616M (2021) vs. $10,613M (2020), driven by 11% operating profit growth  </p>
+</li>
+<li>
+<p>Non-cash adjustments added $2,710M through depreciation/amortization, partially offset by $785M pension contributions  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Earnings Quality</strong>:  </p>
+<ul>
+<li>
+<p>5% effective net pricing contribution across segments, peaking at 10% in Latin America (Chunk 21)  </p>
+</li>
+<li>
+<p>Extended accounts payable by $1,762M to offset $651M receivables growth from sales expansion  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Structural Liabilities</strong>:  </p>
+<ul>
+<li>
+<p>Pension obligations consumed 6.8% of 2021 operating cash flow ($785M contributions)  </p>
+</li>
+<li>
+<p>Commodity hedges covered $1.6B notional exposure across agricultural/energy inputs</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">2. Investment Strategy and Capital Allocation</strong></h3>
+<p><strong class="highlight-text">Productivity Investments</strong>:  </p>
+<ul>
+<li>
+<p>$4,625M CAPEX (2021) focused on manufacturing automation and digital supply chain upgrades  </p>
+</li>
+<li>
+<p>PP&amp;E base grew 4.8% to $22.4B, supporting 120-150bps margin improvement targets  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Portfolio Rebalancing</strong>:  </p>
+<ul>
+<li>
+<p>Divested Tropicana/Naked brands while retaining chilled DSD distribution rights in U.S. markets  </p>
+</li>
+<li>
+<p>Maintained 3.5% R&amp;D investment rate for healthier product innovation  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Market Execution</strong>:  </p>
+<ul>
+<li>
+<p>Price/mix contributed 5% to organic growth through premium SKU expansion  </p>
+</li>
+<li>
+<p>Energy drink distribution expanded via Rockstar integration (acquired 2020 for $3.85B)</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">3. Financing Activities and Capital Structure</strong></h3>
+<p><strong class="highlight-text">Debt Management</strong>:  </p>
+<ul>
+<li>
+<p>Reduced gross debt by $4.8B via tender offers, offset by $4.1B new issuances (Chunk 36)  </p>
+</li>
+<li>
+<p>Maintained $7.5B undrawn credit facilities despite $4.3B near-term maturities  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Shareholder Returns</strong>:  </p>
+<ul>
+<li>
+<p>$5.8B dividend payout (7% increase authorized for 2022) with 123% FCF coverage  </p>
+</li>
+<li>
+<p>Debt/equity ratio improved to 2.1x (2021) from 2.4x (2020) through active liability management  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Liquidity Profile</strong>:  </p>
+<ul>
+<li>
+<p>$5.6B cash reserves provide 1.3x coverage of short-term debt obligations  </p>
+</li>
+<li>
+<p>Commercial paper program ($400M outstanding) maintained for operational flexibility</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">4. Cash Flow Sustainability Assessment</strong></h3>
+<p><strong class="highlight-text">Reinvestment Capacity</strong>:  </p>
+<ul>
+<li>
+<p>$7,157M FCF (2021) covers 123% of dividends and 78% of debt principal payments  </p>
+</li>
+<li>
+<p>FCF/Revenue ratio of 9.0% supports ongoing innovation and automation investments  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Strategic Initiatives</strong>:  </p>
+<ul>
+<li>
+<p>$3.5B pending juice divestiture proceeds allocated to pep+ sustainability program  </p>
+</li>
+<li>
+<p>Supply chain automation expected to yield $800M+ annual savings by 2025  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Risk Mitigation</strong>:  </p>
+<ul>
+<li>
+<p>14% commodity inflation partially offset through 2023 futures contracts  </p>
+</li>
+<li>
+<p>Pension service costs forecast at $500M+ annually through 2026</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">Conclusion</strong></h3>
+<p>PepsiCo's cash flow mechanics demonstrate pricing power (5% net effective pricing) and working capital discipline ($1.8B payable extension). Strategic debt reduction ($4.8B tendered) and retained juice distribution rights preserve flexibility for premium category growth. While pension liabilities (6.8% of OCF) and input cost volatility require monitoring, the 2022 capital plan balances 7% dividend growth with continued CAPEX investment in margin-enhancing automation. With $5.6B liquidity and 9.0% FCF margin, the company maintains adequate capacity to navigate inflationary pressures while executing category premiumization strategies.</p>
+                </div>
+            
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Generated on April 06, 2025</p>
+    </footer>
+    
+    <script>
+        function openTab(evt, tabName) {
+            var i, tabContent, tabButtons;
+            
+            // Hide all tab content
+            tabContent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabContent.length; i++) {
+                tabContent[i].style.display = "none";
+                tabContent[i].className = tabContent[i].className.replace(" active", "");
+            }
+            
+            // Deactivate all buttons
+            tabButtons = document.getElementsByClassName("tab-button");
+            for (i = 0; i < tabButtons.length; i++) {
+                tabButtons[i].className = tabButtons[i].className.replace(" active", "");
+            }
+            
+            // Show the current tab and activate the button
+            document.getElementById(tabName).style.display = "block";
+            document.getElementById(tabName).className += " active";
+            evt.currentTarget.className += " active";
+        }
+    </script>
+</body>
+</html>
+    

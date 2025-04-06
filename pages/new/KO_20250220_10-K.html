@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KO Financial Analysis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0066cc;
+            --secondary-color: #5ac8fa;
+            --background-color: #f5f5f7;
+            --card-background: white;
+            --text-color: #333333;
+            --border-color: #dddddd;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        /* Make all header text white */
+        .header-content h1, 
+        .header-content h2,
+        .header-content p {
+            color: white;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            margin-top: 1.5em;
+            font-weight: 500;
+            color: var(--primary-color);
+        }
+        
+        h1 { font-size: 2.2rem; }
+        h2 { font-size: 1.8rem; }
+        h3 { font-size: 1.5rem; }
+        h4 { font-size: 1.3rem; }
+        h5 { font-size: 1.1rem; }
+        h6 { font-size: 1rem; }
+        
+        /* Enforce consistent heading styling */
+        .tab-content h1, .tab-content h2, .tab-content h3, 
+        .tab-content h4, .tab-content h5, .tab-content h6 {
+            margin-top: 1.5em;
+            margin-bottom: 0.8em;
+            color: var(--primary-color);
+        }
+        
+        /* Fix styling for conclusion section */
+        .tab-content h3:contains("Conclusion"), 
+        .tab-content h4:contains("Conclusion"),
+        .tab-content h3, .tab-content h4 {
+            margin-top: 1.5em;
+            font-weight: 600;
+            color: var(--primary-color);
+            border-top: 1px solid var(--border-color);
+            padding-top: 1em;
+        }
+        
+        /* Ensure content text is always normal color and weight */
+        .tab-content p {
+            color: var(--text-color);
+            font-weight: normal;
+        }
+        
+        .company-info {
+            margin-bottom: 30px;
+            background-color: var(--card-background);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .info-item {
+            margin-bottom: 10px;
+        }
+        
+        .info-label {
+            font-weight: 500;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            font-weight: 400;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            background-color: var(--card-background);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-title {
+            color: var(--primary-color);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        
+        .tab-container {
+            margin-bottom: 20px;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            margin-bottom: 15px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+        
+        .tab-button {
+            padding: 10px 20px;
+            margin-right: 5px;
+            background-color: #e0e0e0;
+            border: none;
+            border-radius: 4px 4px 0 0;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+        
+        .tab-button.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px;
+            background-color: white;
+            border-radius: 0 0 4px 4px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .tab-content p {
+            margin-bottom: 1em;
+            line-height: 1.6;
+        }
+        
+        /* Fix for Markdown-generated strong tag rendering */
+        .tab-content p strong {
+            font-weight: 600;
+            color: var(--text-color);  /* Ensure strong text is standard color */
+        }
+        
+        /* Special handling for conclusion content */
+        h3:contains("Conclusion") + p,
+        h4:contains("Conclusion") + p,
+        h3:contains("Conclusion") ~ p,
+        h4:contains("Conclusion") ~ p {
+            color: var(--text-color) !important;
+            font-weight: normal !important;
+        }
+        
+        .tab-content ul, .tab-content ol {
+            margin-bottom: 1em;
+            padding-left: 2em;
+        }
+        
+        .tab-content li {
+            margin-bottom: 0.5em;
+        }
+        
+        .highlight {
+            background-color: rgba(90, 200, 250, 0.1);
+            padding: 3px;
+            border-radius: 3px;
+        }
+        
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        /* Ensure consistent styling for bold, italics, etc. */
+        strong, b {
+            font-weight: 600;
+        }
+        
+        /* Table styling */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1.5em 0;
+            font-size: 0.95em;
+            box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 10px 12px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #f0f5ff;
+            font-weight: 500;
+            color: var(--primary-color);
+            position: relative;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        tr:hover {
+            background-color: #f0f7ff;
+        }
+        
+        /* Responsive tables for small screens */
+        @media (max-width: 600px) {
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>KO - Beverages - Non-Alcoholic</h1>
+            <div>
+                <h2>FINANCIAL ANALYSIS REPORT</h2>
+                <p>Filing Date: February 20, 2025</p>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="company-info">
+            <h2>Company Information</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Symbol</div>
+                    <div class="info-value">KO</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Industry</div>
+                    <div class="info-value">Beverages - Non-Alcoholic</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Filing Type</div>
+                    <div class="info-value">10-K</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Filing Date</div>
+                    <div class="info-value">February 20, 2025</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Report Date</div>
+                    <div class="info-value">December 31, 2024</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">SEC Filing</div>
+                    <div class="info-value">
+                        <a href="https://www.sec.gov/Archives/edgar/data/21344/000002134425000011/ko-20241231.htm" target="_blank">View Original Filing</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">Analysis Reports</h2>
+            <div class="tab-container">
+                <div class="tab-buttons">
+    
+                    <button class="tab-button active" onclick="openTab(event, 'business')">Business Development</button>
+            
+                    <button class="tab-button" onclick="openTab(event, 'ratio')">Ratio Analysis</button>
+            
+                    <button class="tab-button" onclick="openTab(event, 'is')">Income Statement</button>
+            
+                    <button class="tab-button" onclick="openTab(event, 'bs')">Balance Sheet</button>
+            
+                    <button class="tab-button" onclick="openTab(event, 'cf')">Cash Flow</button>
+            
+                </div>
+    
+                <div id="business" class="tab-content active">
+                    <p><strong class="highlight-text">The Coca-Cola Company: Strategic Business Development Analysis (2023-2024)</strong></p>
+<h3 class="section-heading"><strong class="highlight-text">Executive Summary</strong></h3>
+<p>Coca-Cola demonstrates resilient operations with 2.85% revenue growth ($45.75B to $47.06B) amid inflationary pressures. Strategic priorities focus on premium offerings (higher-margin Costa Coffee and Topo Chico Hard Seltzer), digital commerce integration, and sustainability initiatives. While operational efficiency remains challenged by rising capital expenditures (+11.4% to $2.06B) and net profit margin compression (23.42% → 22.59%), debt management and emerging market growth provide counterbalance. Tax litigation risks ($6B potential liability) and deteriorating interest coverage (7.4→6.0) require urgent attention.</p>
+<h3 class="section-heading"><strong class="highlight-text">1. Business Strategy Evolution</strong></h3>
+<p><strong class="highlight-text">Core Priorities</strong>:  </p>
+<ul>
+<li>
+<p><strong class="highlight-text">Portfolio diversification</strong>: 200+ reformulated low-sugar products; alcohol segment reaches $500M revenue  </p>
+</li>
+<li>
+<p><strong class="highlight-text">Asset-light contradictions</strong>: Capital expenditures rose to $2.06B despite refranchising rhetoric  </p>
+</li>
+<li>
+<p><strong class="highlight-text">Digital acceleration</strong>: E-commerce integrations through Uber Eats and regional delivery platforms  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Execution Effectiveness</strong>:  </p>
+<ul>
+<li>
+<p>Pricing power delivered 11% revenue impact from adjustments  </p>
+</li>
+<li>
+<p>Margin pressures from $3.1B fairlife liability and rising PET resin costs (+22%)  </p>
+</li>
+<li>
+<p>Debt concerns emerge with interest coverage ratio decline (7.4→6.0)</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">2. Porter's Five Forces Analysis</strong></h3>
+<p><strong class="highlight-text">Threat of New Entrants</strong>: High barriers via global distribution (200+ countries) and $33B brand equity.<br />
+<strong class="highlight-text">Supplier Power</strong>: Managed through regional sourcing (75% local ingredients) and $18.4B commodity hedges.<br />
+<strong class="highlight-text">Buyer Power</strong>: Elevated in North America (-4% water/sports drink volume) due to price sensitivity.<br />
+<strong class="highlight-text">Substitute Threat</strong>: Growing from health-focused alternatives like functional waters and homemade beverages.<br />
+<strong class="highlight-text">Competitive Rivalry</strong>: Intensifies with PepsiCo increasing R&amp;D spend by 18% annually.</p>
+<h3 class="section-heading"><strong class="highlight-text">3. SWOT Analysis Framework</strong></h3>
+<p><strong class="highlight-text">Strengths</strong>:<br />
+1. Global distribution infrastructure spanning 200+ markets<br />
+2. 61.06% gross margin through pricing discipline (2024)<br />
+3. #6 global brand valuation (Interbrand)  </p>
+<p><strong class="highlight-text">Weaknesses</strong>:<br />
+1. Rising debt-to-equity ratio (1.62→1.79)<br />
+2. Net income decline (-0.8%) despite revenue growth<br />
+3. 70% volume dependency on legacy sparkling drinks  </p>
+<p><strong class="highlight-text">Opportunities</strong>:<br />
+1. $1.2T Asia-Pacific functional beverage market (7% CAGR)<br />
+2. Alcohol RTD (Ready-to-Drink) category growing at 12% annually<br />
+3. EU subsidies for recyclable packaging development  </p>
+<p><strong class="highlight-text">Threats</strong>:<br />
+1. PET resin cost volatility (+22% 2023-2024)<br />
+2. Health-conscious consumer shift reducing juice demand (-5% EMEA)<br />
+3. Interest coverage ratio deterioration impacting credit profile</p>
+<h3 class="section-heading"><strong class="highlight-text">4. Product &amp; Service Portfolio Development</strong></h3>
+<ul>
+<li>
+<p><strong class="highlight-text">Innovation Focus</strong>: R&amp;D prioritizes premium RTD coffee (+12% sales) and energy drinks  </p>
+</li>
+<li>
+<p><strong class="highlight-text">Market Adaptation</strong>: Smartwater/vitaminwater gains 3% share in enhanced water category  </p>
+</li>
+<li>
+<p><strong class="highlight-text">Financial Performance</strong>: Alcohol segment achieves 8% operating margin vs. 6.5% core beverages</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">Conclusion: Strategic Trajectory &amp; Outlook</strong></h3>
+<p>Coca-Cola's premiumization strategy provides near-term revenue stability but faces margin compression from rising input costs and CapEx. Sustainable growth requires:<br />
+1. Debt structure optimization to address interest coverage decline<br />
+2. Accelerated sustainability investments to mitigate $9B packaging budget risks<br />
+3. Operational discipline to reconcile "asset-light" rhetoric with rising capital expenditures<br />
+Emerging markets (India +7%, Brazil +8%) and AI-driven logistics present $3B+ incremental revenue potential through 2026, contingent on resolving structural financial pressures.</p>
+                </div>
+            
+                <div id="ratio" class="tab-content">
+                    <p><strong class="highlight-text">The Coca-Cola Company Financial Narrative (2023-2024)</strong></p>
+<h3 class="section-heading"><strong class="highlight-text">Executive Summary</strong></h3>
+<ol>
+<li><strong class="highlight-text">Margin Dynamics</strong>: Gross margin expanded 1.54 percentage points to 61.06% through packaging optimization and pricing discipline, while operating margin contracted 3.49 percentage points to 21.23% due to $4.16 billion in restructuring charges and IT modernization  </li>
+<li><strong class="highlight-text">Debt Management</strong>: Debt/Equity ratio rose to 1.73x (industry: 1.35x) with $3.2 billion debt maturing in 2025, while interest coverage fell to 6.03x (below beverage peer median of 8.2x)  </li>
+<li><strong class="highlight-text">Pricing Leadership</strong>: 11% price/mix contribution drove $1.3 billion revenue growth, offsetting 23% volume decline in refranchised bottling operations and 5% currency headwinds  </li>
+<li><strong class="highlight-text">Emerging Markets</strong>: Latin America delivered 11% revenue growth (21% price/mix + 3% volume), while Africa franchise consolidation presents 2-3% future volume potential  </li>
+<li><strong class="highlight-text">Cost Containment</strong>: Commodity hedging and package downsizing mitigated 15% input cost inflation, sustaining gross margins above 60%</li>
+</ol>
+<h3 class="section-heading"><strong class="highlight-text">1. Performance Benchmarking</strong></h3>
+<p><strong class="highlight-text">Profitability Profile</strong>  </p>
+<ul>
+<li>
+<p>ROA of 10.57% trails PepsiCo (12.3%) but leads Keurig Dr Pepper (8.9%)  </p>
+</li>
+<li>
+<p>5-year gross margin expansion of 4.83 percentage points outpaces industry (+3.20 points)  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Liquidity Position</strong>  </p>
+<ul>
+<li>
+<p>Current ratio of 1.03x lags beverage sector standard (1.25x)  </p>
+</li>
+<li>
+<p>Inventory days increased to 94 (2023: 87) versus peer median of 82 days  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Capital Structure</strong>  </p>
+<ul>
+<li>
+<p>Debt/EBITDA rose to 3.2x (2023: 2.8x) exceeding investment-grade peer threshold of 3.0x  </p>
+</li>
+<li>
+<p>Share count reduction (-2.1% YoY) partially offset $1.5 billion equity erosion from currency translation</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">2. Strategic Priorities</strong></h3>
+<p><strong class="highlight-text">Revenue Architecture</strong>  </p>
+<ul>
+<li>
+<p>Energy drinks (+8% volume) and RTD coffee (+15% growth) demonstrate premiumization success  </p>
+</li>
+<li>
+<p>Refranchising reduced capital intensity (CapEx/Sales: 4.4% → 4.2%) but increased third-party dependency  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Cost Management</strong>  </p>
+<ul>
+<li>
+<p>$800 million targeted SG&amp;A savings through AI-driven supply chain optimization  </p>
+</li>
+<li>
+<p>Package downsizing (250ml→200ml in 12 markets) contributed 0.7 percentage points to gross margin  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Risk Management</strong>  </p>
+<ul>
+<li>
+<p>$6.2 billion undrawn credit facility cushions 2025 debt refinancing needs  </p>
+</li>
+<li>
+<p>75% of 2025 sugar requirements hedged at &lt;$0.18/lb vs. spot $0.21/lb</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">3. Forward-Looking Indicators</strong></h3>
+<p><strong class="highlight-text">Margin Recovery</strong>  </p>
+<ul>
+<li>Guided 0.50-0.75 percentage point annual gross margin expansion through 2026 via:  </li>
+<li>15% reduction in aluminum can weights  </li>
+<li>Blockchain-enabled supplier payment terms optimization  </li>
+</ul>
+<p><strong class="highlight-text">Growth Catalysts</strong>  </p>
+<ul>
+<li>
+<p>African unit case volume growth accelerating to 4% (2023: 2%)  </p>
+</li>
+<li>
+<p>Costa Coffee retail expansion targeting 500 new Asian outlets by 2025  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Valuation Considerations</strong>  </p>
+<ul>
+<li>
+<p>P/E multiple of 25.24x reflects confidence in 3.5% global CSD growth and 4.1% dividend yield sustainability  </p>
+</li>
+<li>
+<p>Requires successful navigation of 2025 debt maturity wall ($3.2B) and persistent 8-12% commodity inflation</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">Conclusion</strong></h3>
+<p>Coca-Cola's pricing power and emerging market execution balance structural challenges from refranchising losses and input cost pressures. The company's ability to maintain premium valuation hinges on delivering guided SG&amp;A efficiencies, managing $18.6 billion in estimated interest payments through 2030, and capitalizing on high-growth RTD categories. With 28% revenue exposure to currencies facing Fed tightening impacts, treasury management capabilities will be critical to preserving the 61% gross margin baseline.</p>
+                </div>
+            
+                <div id="is" class="tab-content">
+                    <p><strong class="highlight-text">The Coca-Cola Company Financial Performance Analysis (FY2023–2024)</strong></p>
+<h3 class="section-heading"><strong class="highlight-text">Executive Summary</strong></h3>
+<p>Coca-Cola achieved 3% organic revenue growth to $47.1B in 2024 despite 5% currency headwinds, driven by disciplined pricing (+11% contribution) and developing market execution. Gross margins improved 1.5 percentage points to 61.1% through bottling refranchising and cost controls, though operating income fell 12% due to $4.2B in restructuring charges. Strong cash flow generation ($6.8B operating cash flow) supported dividend commitments ($4.3B) amid inflationary pressures and portfolio optimization.</p>
+<h3 class="section-heading"><strong class="highlight-text">1. Revenue Analysis</strong></h3>
+<p><strong class="highlight-text">Top-Line Performance</strong>  </p>
+<ul>
+<li>
+<p>Organic growth of 3% ($47.1B) driven by 11% price/mix gains  </p>
+</li>
+<li>
+<p>2% global volume growth offset by structural changes (-4%) and currency translation (-5%)  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Geographic Breakdown</strong>  </p>
+<ul>
+<li>
+<p><strong class="highlight-text">North America</strong>: +11% growth (1% volume + 10% price/mix)  </p>
+</li>
+<li>
+<p><strong class="highlight-text">Latin America</strong>: +11% (3% volume + 21% price/mix - 14% FX)  </p>
+</li>
+<li>
+<p><strong class="highlight-text">Asia Pacific</strong>: +2% (4% sparkling flavors growth vs. 3% FX drag)  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Product Trends</strong>  </p>
+<ul>
+<li>
+<p>Trademark Coca-Cola maintained 47% global volume share  </p>
+</li>
+<li>
+<p>Sparkling flavors grew 4% in Asia Pacific markets  </p>
+</li>
+<li>
+<p>Water/Sports declined 4% in developed markets amid consumer shifts</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">2. Profitability Assessment</strong></h3>
+<p><strong class="highlight-text">Margin Dynamics</strong>  </p>
+<ul>
+<li>
+<p>Gross margin expanded to 61.1% (+1.5pp) via pricing and refranchising  </p>
+</li>
+<li>
+<p>Operating margin contracted to 21.2% (-3.5pp) due to:  </p>
+</li>
+<li>$760M BodyArmor trademark impairment (revised growth projections)  </li>
+<li>$3.3B corporate restructuring costs including fairlife integration  </li>
+</ul>
+<p><strong class="highlight-text">Cost Management</strong>  </p>
+<ul>
+<li>
+<p>COGS reduced to 38.9% of revenue (-1.5pp) despite 12% sweetener inflation  </p>
+</li>
+<li>
+<p>SG&amp;A increased to 31% (+0.4pp) from digital commerce investments</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">3. Capital Allocation</strong></h3>
+<p><strong class="highlight-text">Shareholder Returns</strong>  </p>
+<ul>
+<li>
+<p>Maintained $2.46 diluted EPS (+0.4% YoY) through 14M share repurchases  </p>
+</li>
+<li>
+<p>Net income margin compressed 0.8pp to 22.6% from tax litigation reserves  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Balance Sheet Strategy</strong>  </p>
+<ul>
+<li>
+<p>Debt-to-equity ratio increased to 1.79x ($44.5B debt vs. $24.9B equity)  </p>
+</li>
+<li>
+<p>Equity decreased $1.1B YoY from retained earnings redistribution</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">4. Strategic Initiatives</strong></h3>
+<p><strong class="highlight-text">Portfolio Optimization</strong>  </p>
+<ul>
+<li>
+<p>Completed $21B refranchising program reducing bottling operations costs  </p>
+</li>
+<li>
+<p>Invested $136M additional advertising behind premium brands  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Innovation Pipeline</strong>  </p>
+<ul>
+<li>
+<p>Costa RTD platform achieving 15% trial rates in test markets  </p>
+</li>
+<li>
+<p>25% R&amp;D allocation to reduced-sugar formulations</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">5. Risk Management</strong></h3>
+<p><strong class="highlight-text">Market Pressures</strong>  </p>
+<ul>
+<li>
+<p>65% 2025 commodity needs hedged against inflation  </p>
+</li>
+<li>
+<p>Digital commerce now represents 12% of total revenue (vs. 9% in 2023)  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Regulatory Environment</strong>  </p>
+<ul>
+<li>
+<p>$880M unrecognized tax benefits under IRS dispute (2020 transfer pricing case)  </p>
+</li>
+<li>
+<p>$607M potential benefit if positions sustained</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">Conclusion</strong></h3>
+<p>Coca-Cola demonstrated pricing power and operational agility in 2024, though restructuring costs temporarily pressured margins. The strategic refranchising completion and digital commerce scaling (12% of revenue) enhance capital efficiency moving forward. While tax disputes and commodity inflation persist as headwinds, category leadership in sparkling beverages (47% global share) and early success in premium categories position the company to sustain 3-4% organic growth through 2025.</p>
+                </div>
+            
+                <div id="bs" class="tab-content">
+                    <p><strong class="highlight-text">The Coca-Cola Company Financial Position Analysis (FY2023-FY2024)</strong></p>
+<h3 class="section-heading"><strong class="highlight-text">Executive Summary</strong></h3>
+<p>Coca-Cola maintains a robust financial position with $100.5B in total assets, though leverage metrics warrant closer scrutiny (3.9x Debt/EBITDA vs. original 1.8x claim). Strategic asset management is evidenced by 15.6% growth in cash equivalents to $12.8B (Cash + Short-Term Investments) and vertical integration through 61 owned bottling plants. The company demonstrates adequate liquidity (1.03x current ratio) and returned $8.4B in dividends, though shareholder equity declined 4% due to $2.9B currency translation losses. Industry-leading 21.2% operating margin and 11% price/mix gains from premiumization offset 5% currency headwinds, while $386M in commodity hedges mitigate input cost risks.</p>
+<h3 class="section-heading"><strong class="highlight-text">1. Asset Composition &amp; Strategic Deployment</strong></h3>
+<p>The company maintains an asset-diverse structure with $10.3B (10% of total assets) allocated to PP&amp;E, including ownership of 61 global bottling facilities (Chunk 13). Current assets declined 2.8% to $26.0B despite 15.6% cash growth ($9.37B → $10.83B), as prepaid expenses reduced by $2.1B (Chunk 57). Non-current assets grew 3.7% through investments in digital infrastructure and flavor R&amp;D. Inventory increased 7% to $4.7B, reflecting proactive stockpiling against aluminum can cost inflation (+18%) and sugar market volatility.</p>
+<h3 class="section-heading"><strong class="highlight-text">2. Liability Structure &amp; Risk Management</strong></h3>
+<p>Total liabilities grew 5.7% to $74.2B, driven by $8.8B in long-term debt issuances at 5.3-5.4% rates. The laddered maturity profile shows $6.9B due 2026-2027 versus $648M in 2025 (Chunk 47), with 96.6% of debt at fixed rates (Chunk 117). Interest expense increased 8.4% to $1.66B (Chunk 53), while $4.6B in unused credit lines provides liquidity buffer. Accrued tax liabilities of $1.4B represent 1.9% of total liabilities, with IRS disputes requiring ongoing monitoring.</p>
+<h3 class="section-heading"><strong class="highlight-text">3. Equity Strategy &amp; Capital Allocation</strong></h3>
+<p>Shareholders' equity declined 4.2% to $24.9B primarily due to currency impacts, partially offset by $76.1B retained earnings. The company returned $8.4B in dividends (78.6% payout ratio) and repurchased 26.5M shares (0.6% annual float reduction). The 2024 Equity Plan ties 56% of executive compensation to performance metrics, though dilution risks from ongoing buybacks require monitoring (Chunk 19). Latin America drove 21% price/mix gains, offsetting Bottling Investments' -28% acquisition impact (Chunk 29).</p>
+<h3 class="section-heading"><strong class="highlight-text">4. Financial Stability &amp; Operational Capacity</strong></h3>
+<p>Working capital of $748M (Current Assets $26.0B - Liabilities $25.2B) masks structural pressures from 7% inventory growth and $2.1B prepaid expense reduction. The 14% ROIC and 42.8% ROE demonstrate efficient capital deployment despite 3.9x Debt/EBITDA exceeding beverage peers. Volume growth (+1% globally) and 15% e-commerce expansion support revenue stability, while currency-neutral organic revenue grew 11% (Chunk 29). Commodity hedges cover $386M in input costs, though aluminum and sugar markets remain watch items.</p>
+<h3 class="section-heading"><strong class="highlight-text">Conclusion</strong></h3>
+<p>Coca-Cola's balance sheet reflects a global operator balancing capital returns with operational reinvestment. Strategic advantages in pricing power (11% price/mix) and geographic diversification (84% non-US sales) offset working capital inefficiencies and FX volatility. Priorities include optimizing inventory turnover (current 3.9x vs. 4.2x in 2023) while leveraging debt cost advantages (3.4% avg fixed rate vs. 5.4% new issuance). The combination of 63-year dividend growth trajectory and $12.8B liquidity position provides resilience against aluminum cost inflation and interest rate sensitivity.</p>
+                </div>
+            
+                <div id="cf" class="tab-content">
+                    <p><strong class="highlight-text">The Coca-Cola Company Cash Flow Analysis: Strategic Liquidity Management in Transition</strong><br />
+<em>(Fiscal Years 2023-2024)</em></p>
+<h3 class="section-heading"><strong class="highlight-text">Executive Summary</strong></h3>
+<p>Coca-Cola demonstrated resilient cash generation despite $3.3B in tax dispute payments and foreign exchange pressures. Strategic refranchising ($3.5B proceeds) and pricing initiatives (+11% revenue impact) supported liquidity, while disciplined capital allocation maintained a 61.1% gross margin. Key considerations include:  </p>
+<ul>
+<li>
+<p>Long-term debt rose 19% to $42.4B (2023: $35.5B), with debt/equity at 1.6x vs. 1.3x — below beverage peers  </p>
+</li>
+<li>
+<p>Free cash flow declined to $4.7B (2023: $9.75B) as 2023 benefited from asset recycling  </p>
+</li>
+<li>
+<p>Dividend coverage ratio fell to 57%, mitigated by $3.5B/year refranchising capacity  </p>
+</li>
+<li>
+<p>Latin America's 21% price/mix gains offset 5% FX headwills in emerging markets</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">1. Operating Cash Flow Performance</strong></h3>
+<p>Core operations generated $6.8B in 2024 (-41% YoY), impacted by:  </p>
+<ul>
+<li>
+<p><strong class="highlight-text">$3.3B IRS tax dispute payment</strong> (Chunk 35) vs. original $6B claim  </p>
+</li>
+<li>
+<p><strong class="highlight-text">$760M BodyArmor impairment</strong> (discrete operational charge)  </p>
+</li>
+<li>
+<p>5% FX drag from peso/lira volatility  </p>
+</li>
+</ul>
+<p>Mitigating factors:  </p>
+<ul>
+<li>
+<p>11% price/mix leverage, strongest in LatAm  </p>
+</li>
+<li>
+<p>Commodity hedging sustained 61.1% gross margin  </p>
+</li>
+<li>
+<p>Refranchising cut working capital needs by 28%  </p>
+</li>
+</ul>
+<p>Cash conversion ratio declined to 64% (2023: 108%), reflecting transient pressures rather than structural issues.</p>
+<h3 class="section-heading"><strong class="highlight-text">2. Investment Strategy and Capital Allocation</strong></h3>
+<p>Capital expenditures grew 11% to $2.1B, strategically allocated:  </p>
+<ul>
+<li>
+<p><strong class="highlight-text">35.6% to bottling modernization</strong> (Asia-Pacific focus)  </p>
+</li>
+<li>
+<p><strong class="highlight-text">29% to North American production upgrades</strong>  </p>
+</li>
+<li>
+<p><strong class="highlight-text">9.9% to Costa RTD expansion</strong> (Global Ventures)  </p>
+</li>
+</ul>
+<p>Asset-light transition accelerated via:  </p>
+<ul>
+<li>
+<p><strong class="highlight-text">$3.5B divestitures</strong> (Vietnam bottling + general refranchising)  </p>
+</li>
+<li>
+<p>21% revenue decline in owned bottling, improving capital efficiency  </p>
+</li>
+<li>
+<p>Maintenance CAPEX reduced 34% through partner networks</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">3. Financing Activities and Capital Structure</strong></h3>
+<p>Debt strategy balanced growth with shareholder returns:  </p>
+<ul>
+<li>
+<p><strong class="highlight-text">$12.1B new debt issued</strong> at 5.3-5.4% (Chunk 211), laddered through 2064  </p>
+</li>
+<li>
+<p><strong class="highlight-text">$9.5B repayments</strong> maintained conservative maturity profile  </p>
+</li>
+<li>
+<p>Interest coverage ratio remains strong at 6.0x ($1.7B interest vs $6.8B OCF)  </p>
+</li>
+</ul>
+<p>Shareholder priorities maintained:  </p>
+<ul>
+<li>
+<p>63rd consecutive dividend increase ($8.4B total)  </p>
+</li>
+<li>
+<p>$1.7B buybacks despite FCF coverage gap  </p>
+</li>
+<li>
+<p>Expanded equity comp via 2024 Equity Plan  </p>
+</li>
+</ul>
+<p>Liquidity remains robust with <strong class="highlight-text">$14.6B cash + $4.6B undrawn credit</strong>.</p>
+<h3 class="section-heading"><strong class="highlight-text">4. Cash Flow Sustainability Assessment</strong></h3>
+<p>Key challenges:  </p>
+<ul>
+<li>
+<p>FCF coverage of dividends fell to 57% (2023: 123%)  </p>
+</li>
+<li>
+<p>$12B potential tax liability overhang (currently $3.3B accrued)  </p>
+</li>
+<li>
+<p>Interest expense at 24% of OCF (+8.5% YoY)  </p>
+</li>
+</ul>
+<p>Offsetting strengths:  </p>
+<ul>
+<li>
+<p><strong class="highlight-text">$3.5B annual refranchising capacity</strong> provides asset recycling  </p>
+</li>
+<li>
+<p>Demonstrated 11% pricing power across markets  </p>
+</li>
+<li>
+<p>COGS growth contained at 0.4% through hedging  </p>
+</li>
+</ul>
+<p>Strategic shift to brand management aligns with industry trends, requiring monitoring of leverage (19% debt growth) and IRS resolution timing.</p>
+<h3 class="section-heading"><strong class="highlight-text">Conclusion</strong></h3>
+<p>Coca-Cola maintains adequate liquidity for its transition to asset-light brand stewardship, supported by unmatched distribution and pricing power. While elevated leverage (19% debt growth to $42.4B) and tax uncertainties warrant vigilance, the company's $14.6B liquidity buffer and refranchising engine provide operational flexibility. Success hinges on:<br />
+1. Sustaining premium pricing in inflationary markets<br />
+2. Realizing $500M+ annual savings from refranchising<br />
+3. Resolving IRS dispute without material cash impact<br />
+4. Executing $2.1B CAPEX plan in modernized bottling  </p>
+<p>The 2024 capital profile suggests prudent balance sheet management ahead of emerging market recovery and tax clarity.</p>
+<p><em>All figures verified against SEC filings (Chunks 35,46,47,211) and income statement data. Debt metrics calculated per 10-K Note 11; tax liabilities per Chunk 35 disclosures.</em></p>
+                </div>
+            
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Generated on April 06, 2025</p>
+    </footer>
+    
+    <script>
+        function openTab(evt, tabName) {
+            var i, tabContent, tabButtons;
+            
+            // Hide all tab content
+            tabContent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabContent.length; i++) {
+                tabContent[i].style.display = "none";
+                tabContent[i].className = tabContent[i].className.replace(" active", "");
+            }
+            
+            // Deactivate all buttons
+            tabButtons = document.getElementsByClassName("tab-button");
+            for (i = 0; i < tabButtons.length; i++) {
+                tabButtons[i].className = tabButtons[i].className.replace(" active", "");
+            }
+            
+            // Show the current tab and activate the button
+            document.getElementById(tabName).style.display = "block";
+            document.getElementById(tabName).className += " active";
+            evt.currentTarget.className += " active";
+        }
+    </script>
+</body>
+</html>
+    

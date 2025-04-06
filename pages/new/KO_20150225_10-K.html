@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KO Financial Analysis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0066cc;
+            --secondary-color: #5ac8fa;
+            --background-color: #f5f5f7;
+            --card-background: white;
+            --text-color: #333333;
+            --border-color: #dddddd;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        /* Make all header text white */
+        .header-content h1, 
+        .header-content h2,
+        .header-content p {
+            color: white;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            margin-top: 1.5em;
+            font-weight: 500;
+            color: var(--primary-color);
+        }
+        
+        h1 { font-size: 2.2rem; }
+        h2 { font-size: 1.8rem; }
+        h3 { font-size: 1.5rem; }
+        h4 { font-size: 1.3rem; }
+        h5 { font-size: 1.1rem; }
+        h6 { font-size: 1rem; }
+        
+        /* Enforce consistent heading styling */
+        .tab-content h1, .tab-content h2, .tab-content h3, 
+        .tab-content h4, .tab-content h5, .tab-content h6 {
+            margin-top: 1.5em;
+            margin-bottom: 0.8em;
+            color: var(--primary-color);
+        }
+        
+        /* Fix styling for conclusion section */
+        .tab-content h3:contains("Conclusion"), 
+        .tab-content h4:contains("Conclusion"),
+        .tab-content h3, .tab-content h4 {
+            margin-top: 1.5em;
+            font-weight: 600;
+            color: var(--primary-color);
+            border-top: 1px solid var(--border-color);
+            padding-top: 1em;
+        }
+        
+        /* Ensure content text is always normal color and weight */
+        .tab-content p {
+            color: var(--text-color);
+            font-weight: normal;
+        }
+        
+        .company-info {
+            margin-bottom: 30px;
+            background-color: var(--card-background);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .info-item {
+            margin-bottom: 10px;
+        }
+        
+        .info-label {
+            font-weight: 500;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            font-weight: 400;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            background-color: var(--card-background);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-title {
+            color: var(--primary-color);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        
+        .tab-container {
+            margin-bottom: 20px;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            margin-bottom: 15px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+        
+        .tab-button {
+            padding: 10px 20px;
+            margin-right: 5px;
+            background-color: #e0e0e0;
+            border: none;
+            border-radius: 4px 4px 0 0;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+        
+        .tab-button.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px;
+            background-color: white;
+            border-radius: 0 0 4px 4px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .tab-content p {
+            margin-bottom: 1em;
+            line-height: 1.6;
+        }
+        
+        /* Fix for Markdown-generated strong tag rendering */
+        .tab-content p strong {
+            font-weight: 600;
+            color: var(--text-color);  /* Ensure strong text is standard color */
+        }
+        
+        /* Special handling for conclusion content */
+        h3:contains("Conclusion") + p,
+        h4:contains("Conclusion") + p,
+        h3:contains("Conclusion") ~ p,
+        h4:contains("Conclusion") ~ p {
+            color: var(--text-color) !important;
+            font-weight: normal !important;
+        }
+        
+        .tab-content ul, .tab-content ol {
+            margin-bottom: 1em;
+            padding-left: 2em;
+        }
+        
+        .tab-content li {
+            margin-bottom: 0.5em;
+        }
+        
+        .highlight {
+            background-color: rgba(90, 200, 250, 0.1);
+            padding: 3px;
+            border-radius: 3px;
+        }
+        
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        /* Ensure consistent styling for bold, italics, etc. */
+        strong, b {
+            font-weight: 600;
+        }
+        
+        /* Table styling */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1.5em 0;
+            font-size: 0.95em;
+            box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 10px 12px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #f0f5ff;
+            font-weight: 500;
+            color: var(--primary-color);
+            position: relative;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        tr:hover {
+            background-color: #f0f7ff;
+        }
+        
+        /* Responsive tables for small screens */
+        @media (max-width: 600px) {
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>KO - Beverages - Non-Alcoholic</h1>
+            <div>
+                <h2>FINANCIAL ANALYSIS REPORT</h2>
+                <p>Filing Date: February 25, 2015</p>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="company-info">
+            <h2>Company Information</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Symbol</div>
+                    <div class="info-value">KO</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Industry</div>
+                    <div class="info-value">Beverages - Non-Alcoholic</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Filing Type</div>
+                    <div class="info-value">10-K</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Filing Date</div>
+                    <div class="info-value">February 25, 2015</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Report Date</div>
+                    <div class="info-value">December 31, 2014</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">SEC Filing</div>
+                    <div class="info-value">
+                        <a href="https://www.sec.gov/Archives/edgar/data/21344/000002134415000005/a2014123110-k.htm" target="_blank">View Original Filing</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">Analysis Reports</h2>
+            <div class="tab-container">
+                <div class="tab-buttons">
+    
+                    <button class="tab-button active" onclick="openTab(event, 'business')">Business Development</button>
+            
+                    <button class="tab-button" onclick="openTab(event, 'is')">Income Statement</button>
+            
+                    <button class="tab-button" onclick="openTab(event, 'bs')">Balance Sheet</button>
+            
+                    <button class="tab-button" onclick="openTab(event, 'cf')">Cash Flow</button>
+            
+                </div>
+    
+                <div id="business" class="tab-content active">
+                    <p><strong class="highlight-text">The Coca-Cola Company: Strategic Business Development Analysis (2012-2014)</strong></p>
+<h3 class="section-heading"><strong class="highlight-text">Executive Summary</strong></h3>
+<p>Coca-Cola pursued geographic diversification and operational restructuring from 2012-2014, sustaining 61.1% gross margins amid a 1.8% revenue decline. Strategic initiatives included $715M in DPSG licensing agreements, consolidation of North American bottling under Coca-Cola Refreshments (CCR), and targeted growth in Asia-Pacific/Latin America (31% of unit case volume from Mexico/China/Brazil/Japan clusters). While generating $10.6B annual operating cash flow, the company confronted currency volatility ($372M Venezuela losses) and lagging digital integration despite Freestyle dispenser deployments.</p>
+<h3 class="section-heading"><strong class="highlight-text">1. Business Strategy Evolution</strong></h3>
+<p><strong class="highlight-text">Core Priorities</strong>:  </p>
+<ul>
+<li>
+<p><strong class="highlight-text">Emerging Market Focus</strong>: 5% volume growth in Asia-Pacific, with $1.5B infrastructure investments  </p>
+</li>
+<li>
+<p><strong class="highlight-text">Bottling Consolidation</strong>: CCR integration reduced capital intensity, improving North American operating income to $2.447B (2014)  </p>
+</li>
+<li>
+<p><strong class="highlight-text">Portfolio Rationalization</strong>: Pruned underperforming brands while expanding premium juices (+7% Simply growth in 2014)  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Operational Impact</strong>:  </p>
+<ul>
+<li>
+<p>Productivity initiatives drove 210bps SG&amp;A improvement (36.6% to 35.1% of revenue)  </p>
+</li>
+<li>
+<p>Venezuelan currency devaluation erased $372M through SICAD 2 exchange impacts  </p>
+</li>
+<li>
+<p>DPSG licensing expanded distribution reach but required $715M upfront payment  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Financial Performance</strong>:  </p>
+<ul>
+<li>
+<p>ROE declined from 25.9% (2013) to 23.4% (2014) despite $41.7B debt utilization  </p>
+</li>
+<li>
+<p>Asset turnover deteriorated to 0.50x (2014) from 0.52x (2013)</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">2. Porter's Five Forces Analysis</strong></h3>
+<p><strong class="highlight-text">Threat of New Entrants</strong>:  </p>
+<ul>
+<li>Insulated by $26B trademark portfolio and ownership of 4/5 global sparkling brands  </li>
+</ul>
+<p><strong class="highlight-text">Supplier Dynamics</strong>:  </p>
+<ul>
+<li>
+<p>71 functional currencies created hyperinflation exposure (36% raw material cost volatility)  </p>
+</li>
+<li>
+<p>CCR consolidation reduced North American supplier fragmentation by 40%  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Consumer Shifts</strong>:  </p>
+<ul>
+<li>
+<p>46% price sensitivity to health-oriented alternatives in developed markets  </p>
+</li>
+<li>
+<p>Private-label substitutes captured 8% North America still beverage growth (2014)  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Competitive Pressures</strong>:  </p>
+<ul>
+<li>PepsiCo's snack-beverage synergy drove 300bps R&amp;D advantage in functional drinks</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">3. SWOT Analysis Framework</strong></h3>
+<p><strong class="highlight-text">Strengths</strong>:  </p>
+<ul>
+<li>
+<p>Unmatched distribution (28.6B unit cases through 200-country network)  </p>
+</li>
+<li>
+<p>Brand dominance with 73% global sparkling beverage share  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Weaknesses</strong>:  </p>
+<ul>
+<li>
+<p>Overexposure to trademark Coca-Cola (47% volume)  </p>
+</li>
+<li>
+<p>Bottler dependence: 43% revenue tied to equity method investees  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Opportunities</strong>:  </p>
+<ul>
+<li>
+<p>Freestyle dispenser analytics (2.4M daily transactions untapped for DTC models)  </p>
+</li>
+<li>
+<p>Stevia-sweetened variants projected 9% CAGR in health-conscious markets  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Threats</strong>:  </p>
+<ul>
+<li>
+<p>Sugar taxes impacting 22% of revenue markets by 2014  </p>
+</li>
+<li>
+<p>Currency translation headwinds (-15% Latin America EPS impact)</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">4. Product &amp; Service Portfolio Development</strong></h3>
+<p><strong class="highlight-text">Portfolio Optimization</strong>:  </p>
+<ul>
+<li>
+<p>Gold Peak tea (+15% 2013) offset 3% carbonated soft drink decline  </p>
+</li>
+<li>
+<p>Keurig Kold™ partnership delayed home beverage potential by 18 months  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Innovation Outcomes</strong>:  </p>
+<ul>
+<li>
+<p>Freestyle dispensers deployed in 50,000+ locations lacked e-commerce integration  </p>
+</li>
+<li>
+<p>Functional beverages drove 6% LatAm growth but contributed &lt;5% to margins  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Financial Realities</strong>:  </p>
+<ul>
+<li>
+<p>Still beverages reached 27% volume share at 61% gross margin efficiency  </p>
+</li>
+<li>
+<p>Energy drink reliance intensified via Monster distribution agreement</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">Conclusion: Strategic Trajectory &amp; Outlook</strong></h3>
+<p>Coca-Cola's 2012-2014 restructuring established operational resilience through CCR consolidation and emerging market footholds, but exposed vulnerabilities in currency management and digital commerce. The 23.4% ROE (2014) remains industry-leading yet reflects declining capital efficiency. Future success hinges on converting Freestyle's 12B+ annual pours into data-driven innovation and mitigating $1.2B annual FX impacts. With disciplined reinvestment in premium/functional categories and accelerated digital integration, Coca-Cola can leverage its unmatched distribution architecture toward sustainable 4-5% organic growth.</p>
+                </div>
+            
+                <div id="is" class="tab-content">
+                    <p><strong class="highlight-text">The Coca-Cola Company Financial Performance Analysis (2014 vs. 2013)</strong></p>
+<h3 class="section-heading"><strong class="highlight-text">Executive Summary</strong></h3>
+<p>Coca-Cola demonstrated resilient margin management despite a 1.8% revenue decline to $45.99B, driven by currency headwinds (-2%) and strategic refranchising. Gross margins improved 40bps to 61.1% through commodity cost optimization, while net income fell 17% to $7.10B due to <strong class="highlight-text">$1.18B in restructuring charges</strong> and <strong class="highlight-text">$686M in Venezuela-related impacts</strong> ($372M FX loss + $314M receivables/trademark impairment). The company maintained global volume growth (2%) through Asia-Pacific expansion (+5%) while navigating structural shifts in bottling operations and health-conscious consumer trends.</p>
+<h3 class="section-heading"><strong class="highlight-text">1. Revenue Analysis</strong></h3>
+<p><strong class="highlight-text">Top-Line Performance</strong>:  </p>
+<ul>
+<li>
+<p>Currency-neutral revenue grew 0.2% despite 2-year GAAP decline (-1.8% in 2014 vs. -2.4% in 2013)  </p>
+</li>
+<li>
+<p>Bottling Investments revenue fell 8.2% ($7.60B→$6.97B) as refranchising reduced low-margin operations  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Market Dynamics</strong>:  </p>
+<ul>
+<li>
+<p>Sparkling beverages held 73% volume share despite North American declines (-1%)  </p>
+</li>
+<li>
+<p>Still beverages grew 5% in Asia Pacific, capitalizing on health trends  </p>
+</li>
+<li>
+<p><strong class="highlight-text">FX sensitivity</strong>: 81% international unit case volume exposed Coca-Cola to $2B currency drag  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Strategic Mix Shifts</strong>:  </p>
+<ul>
+<li>
+<p>Europe gained 0.6% revenue share through premium juice consolidation (innocent brand)  </p>
+</li>
+<li>
+<p>Refranchising progress lowered bottling revenue to 15% of total (21% in 2013)</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">2. Profitability Assessment</strong></h3>
+<p><strong class="highlight-text">Margin Progression</strong>:  </p>
+<ul>
+<li>
+<p>Gross profit per dollar of revenue improved to $0.611 (2014) from $0.607 (2013) via PET/sweetener optimization  </p>
+</li>
+<li>
+<p><strong class="highlight-text">Refranchising payoff</strong>: 8.2% bottling revenue decline contributed to 40bps gross margin expansion  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Operational Challenges</strong>:  </p>
+<ul>
+<li>
+<p>Venezuela crisis created <strong class="highlight-text">$686M total impact</strong> ($372M currency remeasurement + $314M receivables/trademark impairment)  </p>
+</li>
+<li>
+<p>$799M productivity program costs compressed operating margin (-70bps to 21.1%)  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Cost Efficiency</strong>:  </p>
+<ul>
+<li>Reduced COGS by 2.9% ($18.42B→$17.89B) despite inflation through hedging and supply chain optimization</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">3. Expense Evaluation</strong></h3>
+<p><strong class="highlight-text">Strategic Investments</strong>:  </p>
+<ul>
+<li>
+<p>Increased advertising spend 7% to $4.2B supporting premiumization  </p>
+</li>
+<li>
+<p>Committed $1.6B to Keurig cold beverage system development  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Structural Changes</strong>:  </p>
+<ul>
+<li>
+<p>SG&amp;A declined 1% ($17.31B→$17.22B) through bottling operation exits  </p>
+</li>
+<li>
+<p>Refranchising generated $305M noncash loss but improved long-term margin profile  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Productivity Focus</strong>:  </p>
+<ul>
+<li>$601M spent on supply chain optimization (part of $3.6B annual savings target)</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">4. Financial Outcomes</strong></h3>
+<p><strong class="highlight-text">Shareholder Impact</strong>:  </p>
+<ul>
+<li>
+<p>EPS declined 16% ($1.90→$1.60) despite <strong class="highlight-text">$4.16B share repurchases</strong>  </p>
+</li>
+<li>
+<p>ROE fell from 23.9% to 19.4% on lower net income  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Cash Flow Utilization</strong>:  </p>
+<ul>
+<li>
+<p><strong class="highlight-text">89% of operating cash flow</strong> ($9.51B of $10.62B) allocated to dividends/share buybacks  </p>
+</li>
+<li>
+<p>Maintained $1.98B annual depreciation spend supporting production modernization  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Capital Efficiency</strong>:  </p>
+<ul>
+<li>Reduced capital expenditures 5.6% ($2.55B→$2.41B) while modernizing 40+ production lines</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">5. Sustainability &amp; Strategic Outlook</strong></h3>
+<p><strong class="highlight-text">Growth Levers</strong>:  </p>
+<ul>
+<li>
+<p><strong class="highlight-text">27.7% low/no-calorie portfolio</strong> (1,000/3,600 beverages per SEC filings) addresses sugar tax concerns  </p>
+</li>
+<li>
+<p>Monster Energy distribution secured 9% share in global energy drink category  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Risk Mitigation</strong>:  </p>
+<ul>
+<li>
+<p>85% of PET needs hedged through 2016  </p>
+</li>
+<li>
+<p>Local currency pricing in hyperinflationary markets  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Capacity Metrics</strong>:  </p>
+<ul>
+<li>
+<p>5% annual productivity savings target through 2019  </p>
+</li>
+<li>
+<p>40% R&amp;D budget allocated to packaging innovation</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">Conclusion</strong></h3>
+<p>Coca-Cola's 2014 results reflect strategic repositioning amidst structural industry shifts. While near-term profitability suffered from <strong class="highlight-text">$1.86B in exceptional charges</strong> (restructuring + Venezuela), gross margin expansion and refranchising progress established a foundation for improved capital efficiency. Success in premium beverages (+25% revenue) and emerging markets (5% Asia-Pac volume growth) offsets mature market challenges. Sustained EPS recovery hinges on Keurig system adoption and mitigating <strong class="highlight-text">$2B annual FX exposure</strong> from international operations.</p>
+                </div>
+            
+                <div id="bs" class="tab-content">
+                    <p><strong class="highlight-text">The Coca-Cola Company Financial Position Analysis (FY2013-FY2014)</strong></p>
+<h3 class="section-heading"><strong class="highlight-text">Executive Summary</strong></h3>
+<p>Coca-Cola demonstrates resilient global market leadership with disciplined capital allocation, though increasing leverage and working capital volatility require strategic focus. The company delivered strong profitability (23.4% ROE) and operating cash flow ($10.6B), supported by 2% global volume growth led by Asia Pacific (+5%) offsetting flat North American performance. Currency headwinds (-9% pre-tax income impact) and Venezuelan hyperinflation ($2.4B equity reduction) partially masked operational strengths in gross margins (61.1%) and interest coverage (20.1x).</p>
+<h3 class="section-heading"><strong class="highlight-text">1. Asset Composition &amp; Strategic Deployment</strong></h3>
+<p><strong class="highlight-text">Current Assets</strong> declined 14% in cash reserves to $9.0B (2014) while short-term investments surged 35% to $9.1B, reflecting tactical liquidity management. Non-current assets represent <strong class="highlight-text">64% of total assets</strong> ($59.0B), anchored by:  </p>
+<ul>
+<li>
+<p><strong class="highlight-text">Brand Intangibles</strong>: $26.4B (29% of assets), including $6.5B in trademarks  </p>
+</li>
+<li>
+<p><strong class="highlight-text">Strategic Investments</strong>: $9.9B equity stakes in bottlers + $2.6B Keurig Green Mountain position (Chunk 200)  </p>
+</li>
+<li>
+<p><strong class="highlight-text">PP&amp;E Optimization</strong>: 2% reduction to $14.6B via refranchising  </p>
+</li>
+</ul>
+<p>Portfolio rebalancing is evident in the $1.3B derivatives portfolio (Chunk 432) hedging commodity risks and 5% inventory reduction improving turnover efficiency.</p>
+<h3 class="section-heading"><strong class="highlight-text">2. Liability Structure &amp; Risk Management</strong></h3>
+<p>Debt-to-equity ratio increased from 1.12 to 1.38 (2014) driven by:  </p>
+<ul>
+<li>
+<p><strong class="highlight-text">Commercial Paper Reliance</strong>: $19.0B short-term borrowings at 4.3% average interest cost (Chunk 174)  </p>
+</li>
+<li>
+<p><strong class="highlight-text">Strategic Leverage</strong>: $4.0B gross share repurchases ($2.6B net) funded through AA-rated debt  </p>
+</li>
+<li>
+<p><strong class="highlight-text">Bottler Contingencies</strong>: Obligations from refranchising agreements  </p>
+</li>
+</ul>
+<p>Derivative liabilities grew to $123M (Chunk 432) managing FX/commodity exposures, while long-term debt remained stable at $19.1B through maturity laddering.</p>
+<h3 class="section-heading"><strong class="highlight-text">3. Equity Strategy &amp; Capital Allocation</strong></h3>
+<p>Shareholders' equity declined 9% to $30.3B (2014) due to:  </p>
+<ul>
+<li>
+<p><strong class="highlight-text">Capital Returns</strong>: $4.0B gross buybacks (98M shares) + 9% dividend increase  </p>
+</li>
+<li>
+<p><strong class="highlight-text">Currency Impacts</strong>: $2.4B AOCI reduction from Venezuelan hyperinflation accounting (Chunk 211)  </p>
+</li>
+<li>
+<p><strong class="highlight-text">Growth Investments</strong>: $2.6B Keurig stake vs. $7.1B retained earnings  </p>
+</li>
+</ul>
+<p>The 53-year dividend growth streak remains intact despite $1.5B equity erosion from FX translation.</p>
+<h3 class="section-heading"><strong class="highlight-text">4. Financial Stability &amp; Operational Capacity</strong></h3>
+<p><strong class="highlight-text">Working Capital Pressures</strong> emerged with current ratio at 1.02 (2014), impacted by:  </p>
+<ul>
+<li>
+<p>$7B customer incentive programs straining receivables  </p>
+</li>
+<li>
+<p>$314M Venezuela receivables write-downs (Chunk 460)  </p>
+</li>
+<li>
+<p>Inventory optimization (-5%) partially offset by payables acceleration  </p>
+</li>
+</ul>
+<p>Operational resilience is evidenced by:  </p>
+<ul>
+<li>
+<p>20.1x interest coverage ratio (Chunk 118)  </p>
+</li>
+<li>
+<p>61.1% gross margins through 48% hedged input costs  </p>
+</li>
+<li>
+<p>81% international revenue diversification</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">Conclusion</strong></h3>
+<p>Coca-Cola's financial strategy balances brand stewardship (29% intangibles) with shareholder returns, though Latin American volatility and rising leverage warrant vigilance. The $10.6B operating cash flow and AA credit rating provide stability, while refranchising (-2% PP&amp;E) and Keurig's growth potential counter 1.8% revenue declines. Sustaining leadership requires optimizing $15.3B purchase obligations (Chunk 182) and managing $18.5B long-term FX/commodity exposures.</p>
+                </div>
+            
+                <div id="cf" class="tab-content">
+                    <p><strong class="highlight-text">The Coca-Cola Company Cash Flow Analysis: Strategic Financial Management in Transition</strong><br />
+<em>(Fiscal Years 2013-2014)</em></p>
+<h3 class="section-heading"><strong class="highlight-text">Executive Summary</strong></h3>
+<p>Coca-Cola maintained robust cash generation ($10.6B operating cash flow) despite a 17% net income decline, achieving exceptional cash conversion efficiency (149% OCF/Net Income ratio). Strategic refranchising initiatives and working capital discipline offset emerging market volatility, while investments in Keurig ($17.8B) and Fairlife dairy innovation created growth vectors. Conservative leverage (AA credit rating) and optimized debt structure ($37.8B commercial paper + $3.6B long-term debt) supported $4B annual shareholder returns. Currency headwinds (-7% FX impact) drove a 2% net revenue decline despite 3% price/mix gains and 2% volume growth, underscoring the complexity of global operations.</p>
+<h3 class="section-heading"><strong class="highlight-text">1. Operating Cash Flow Performance</strong></h3>
+<p><strong class="highlight-text">Core Metrics</strong>:  </p>
+<ul>
+<li>
+<p>Operating Cash Flow: $10,615M (+1% YoY)  </p>
+</li>
+<li>
+<p>Net Income: $7,098M (-17% YoY)  </p>
+</li>
+<li>
+<p>Cash Conversion Ratio: 149% (OCF/Net Income)  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Value Drivers</strong>:  </p>
+<ul>
+<li>
+<p><strong class="highlight-text">Non-Cash Adjustments</strong>: $1,976M depreciation/amortization + $799M refranchising losses  </p>
+</li>
+<li>
+<p><strong class="highlight-text">Working Capital Optimization</strong>:  </p>
+</li>
+<li>$407M receivables reduction (including $296M Venezuela write-down + $18M impairment)  </li>
+<li>
+<p>$177M inventory turnover improvement (5.77x vs 5.62x 2013)  </p>
+</li>
+<li>
+<p><strong class="highlight-text">Revenue Dynamics</strong>:  </p>
+</li>
+<li>3% price/mix growth partially offset 7% FX headwinds  </li>
+<li>Net revenue decline of 2% despite 2% volume growth  </li>
+</ul>
+<p><strong class="highlight-text">Risk Exposure</strong>:  </p>
+<ul>
+<li>
+<p>$314M Venezuela-related charges (currency remeasurement + receivables)  </p>
+</li>
+<li>
+<p>9% FX volatility impact on 2013 cash flows</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">2. Investment Strategy and Capital Allocation</strong></h3>
+<p><strong class="highlight-text">CAPEX Reorientation</strong>:  </p>
+<ul>
+<li>
+<p>Total CAPEX: $2,406M (-5% YoY) with 53.7% allocated to North American modernization  </p>
+</li>
+<li>
+<p><strong class="highlight-text">Strategic Shifts</strong>:  </p>
+</li>
+<li>Divested $148M North American bottling assets  </li>
+<li>Acquired Ecuador dairy JV ($389M) + expanded Keurig Cold System partnership  </li>
+<li>Reduced Bottling Investments CAPEX to 26.1% from 31.2% (2012)  </li>
+</ul>
+<p><strong class="highlight-text">Emerging Market Positioning</strong>:  </p>
+<ul>
+<li>
+<p>$19.5B overseas cash reserves (81% international unit case volume)  </p>
+</li>
+<li>
+<p>Hyperinflation management: $146M Venezuela remeasurement loss (SICAD 2 rate adoption)</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">3. Financing Activities and Capital Structure</strong></h3>
+<p><strong class="highlight-text">Shareholder Returns</strong>:  </p>
+<ul>
+<li>
+<p>Dividends: $1.22/share (+9% YoY), 53-year growth streak  </p>
+</li>
+<li>
+<p>Buybacks: $4B repurchases (98M shares at $40.97 avg price)  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Debt Management Strategy</strong>:  </p>
+<ul>
+<li>
+<p>Issued $41.7B debt (76% commercial paper + 8% long-term)  </p>
+</li>
+<li>
+<p>Maintained 0.7x debt/equity ratio with $7.7B undrawn credit facilities  </p>
+</li>
+<li>
+<p>Interest Coverage Ratio: 16.5x (FCF/Interest Paid)  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Liquidity Profile</strong>:  </p>
+<ul>
+<li>
+<p>Immediate liquidity: $8,958M cash + $9,052M short-term investments  </p>
+</li>
+<li>
+<p>Contractual obligations coverage: $67.4B capacity</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">4. Cash Flow Sustainability Assessment</strong></h3>
+<p><strong class="highlight-text">Key Metrics</strong>:  </p>
+<ul>
+<li>
+<p>Free Cash Flow: $8,209M (1.5x dividend coverage)  </p>
+</li>
+<li>
+<p>Productivity Reserves: $3.6B annual cost savings through 2019  </p>
+</li>
+<li>
+<p>Asset Efficiency: 0.5x asset turnover ratio  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Risk Mitigation</strong>:  </p>
+<ul>
+<li>
+<p>Commodity hedging offset $37M COGS inflation (2014)  </p>
+</li>
+<li>
+<p>53% of contractual obligations due beyond 2020  </p>
+</li>
+</ul>
+<p><strong class="highlight-text">Growth Catalysts</strong>:  </p>
+<ul>
+<li>
+<p>Keurig partnership: 11% revenue growth in at-home beverage segment  </p>
+</li>
+<li>
+<p>Fairlife ultra-filtered milk: 15% market share in premium dairy category</p>
+</li>
+</ul>
+<h3 class="section-heading"><strong class="highlight-text">Conclusion</strong></h3>
+<p>Coca-Cola's cash flow engine demonstrates structural resilience despite 81% international exposure and currency volatility. Strategic refranchising generated $1.1B annual cash flow improvement, while $17.8B Keurig investment positions the company for category expansion. The AA credit rating and 1.5x FCF dividend coverage ratio support continued innovation, though Venezuela's hyperinflation ($52M trapped cash) and Argentina currency controls require ongoing monitoring. With 53.7% of CAPEX directed to North American modernization and $3.6B productivity program, Coca-Cola remains positioned to lead beverage industry premiumization.</p>
+                </div>
+            
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Generated on April 06, 2025</p>
+    </footer>
+    
+    <script>
+        function openTab(evt, tabName) {
+            var i, tabContent, tabButtons;
+            
+            // Hide all tab content
+            tabContent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabContent.length; i++) {
+                tabContent[i].style.display = "none";
+                tabContent[i].className = tabContent[i].className.replace(" active", "");
+            }
+            
+            // Deactivate all buttons
+            tabButtons = document.getElementsByClassName("tab-button");
+            for (i = 0; i < tabButtons.length; i++) {
+                tabButtons[i].className = tabButtons[i].className.replace(" active", "");
+            }
+            
+            // Show the current tab and activate the button
+            document.getElementById(tabName).style.display = "block";
+            document.getElementById(tabName).className += " active";
+            evt.currentTarget.className += " active";
+        }
+    </script>
+</body>
+</html>
+    
